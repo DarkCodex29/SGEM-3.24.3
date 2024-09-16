@@ -26,90 +26,153 @@ class PersonalSearchPage extends StatelessWidget {
         ),
         backgroundColor: AppTheme.primaryBackground,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildFormSection(),
-            const SizedBox(height: 20),
-            _buildResultsSection(),
-          ],
-        ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          bool isSmallScreen = constraints.maxWidth < 600;
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _buildFormSection(isSmallScreen), // Sección del formulario
+                const SizedBox(height: 20),
+                _buildResultsSection(isSmallScreen), // Sección de resultados
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildFormSection() {
+  // Sección del formulario
+  Widget _buildFormSection(bool isSmallScreen) {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300), // Borde gris suave
+        border: Border.all(color: Colors.grey.shade300),
       ),
       child: Column(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: CustomTextField(
-                  label: "Código MCP",
-                  controller: codigoMCPController,
+          isSmallScreen
+              ? Column(
+                  children: [
+                    CustomTextField(
+                      label: "Código MCP",
+                      controller: codigoMCPController,
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      label: "Documento de identidad",
+                      controller: documentoIdentidadController,
+                    ),
+                    const SizedBox(height: 10),
+                    CustomDropdown(
+                      hintText: "Guardia",
+                      options: ["A", "B", "C", "D", "Todos"],
+                      isSearchable: false,
+                      onChanged: (value) {},
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      label: "Nombres personal",
+                      controller: nombresController,
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      label: "Apellidos personal",
+                      controller: apellidosController,
+                    ),
+                    const SizedBox(height: 10),
+                    CustomDropdown(
+                      hintText: "Estado",
+                      options: ["Activo", "Inactivo", "Todos"],
+                      isSearchable: false,
+                      onChanged: (value) {},
+                    ),
+                  ],
+                )
+              : Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        label: "Código MCP",
+                        controller: codigoMCPController,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: CustomTextField(
+                        label: "Documento de identidad",
+                        controller: documentoIdentidadController,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: CustomDropdown(
+                        hintText: "Guardia",
+                        options: ["A", "B", "C", "D", "Todos"],
+                        isSearchable: false,
+                        onChanged: (value) {},
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: CustomTextField(
-                  label: "Documento de identidad",
-                  controller: documentoIdentidadController,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: CustomDropdown(
-                  hintText: "Guardia",
-                  options: ["A", "B", "C", "D", "Todos"],
-                  isSearchable: false,
-                  onChanged: (value) {},
-                ),
-              ),
-            ],
-          ),
           const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: CustomTextField(
-                  label: "Nombres personal",
-                  controller: nombresController,
+          isSmallScreen
+              ? Column(
+                  children: [
+                    CustomTextField(
+                      label: "Nombres personal",
+                      controller: nombresController,
+                    ),
+                    const SizedBox(height: 10),
+                    CustomTextField(
+                      label: "Apellidos personal",
+                      controller: apellidosController,
+                    ),
+                    const SizedBox(height: 10),
+                    CustomDropdown(
+                      hintText: "Estado",
+                      options: ["Activo", "Inactivo", "Todos"],
+                      isSearchable: false,
+                      onChanged: (value) {},
+                    ),
+                  ],
+                )
+              : Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        label: "Nombres personal",
+                        controller: nombresController,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: CustomTextField(
+                        label: "Apellidos personal",
+                        controller: apellidosController,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: CustomDropdown(
+                        hintText: "Estado",
+                        options: ["Activo", "Inactivo", "Todos"],
+                        isSearchable: false,
+                        onChanged: (value) {},
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: CustomTextField(
-                  label: "Apellidos personal",
-                  controller: apellidosController,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: CustomDropdown(
-                  hintText: "Estado",
-                  options: ["Activo", "Inactivo", "Todos"],
-                  isSearchable: false,
-                  onChanged: (value) {},
-                ),
-              ),
-            ],
-          ),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               ElevatedButton.icon(
-                onPressed: () {
-                  // Acción para limpiar
-                },
+                onPressed: _clearFields, // Funcionalidad para limpiar campos
                 icon: const Icon(
                   Icons.cleaning_services,
                   size: 18,
@@ -161,7 +224,14 @@ class PersonalSearchPage extends StatelessWidget {
     );
   }
 
-  Widget _buildResultsSection() {
+  void _clearFields() {
+    codigoMCPController.clear();
+    documentoIdentidadController.clear();
+    nombresController.clear();
+    apellidosController.clear();
+  }
+
+  Widget _buildResultsSection(bool isSmallScreen) {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -179,72 +249,15 @@ class PersonalSearchPage extends StatelessWidget {
                 "Personal",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              Row(
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      // Acción para actualización masiva
-                    },
-                    icon: const Icon(
-                      Icons.refresh,
-                      size: 18,
-                      color: AppTheme.infoColor,
-                    ),
-                    label: const Text("Actualización masiva",
-                        style:
-                            TextStyle(fontSize: 16, color: AppTheme.infoColor)),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 36, vertical: 18),
-                      backgroundColor: AppTheme.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: const BorderSide(color: AppTheme.primaryColor),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      // Acción para descargar Excel
-                    },
-                    icon: const Icon(Icons.download,
-                        size: 18, color: AppTheme.primaryColor),
-                    label: const Text("Descargar Excel",
-                        style: TextStyle(
-                            fontSize: 16, color: AppTheme.primaryColor)),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 36, vertical: 18),
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: const BorderSide(color: AppTheme.primaryColor),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      // Acción para agregar nuevo personal
-                    },
-                    icon: const Icon(Icons.add,
-                        size: 18, color: AppTheme.primaryBackground),
-                    label: const Text("Nuevo personal",
-                        style: TextStyle(
-                            fontSize: 16, color: AppTheme.primaryBackground)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 36, vertical: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: const BorderSide(color: AppTheme.primaryColor),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              // Botones debajo si es pantalla pequeña
+              if (isSmallScreen)
+                Column(
+                  children: _buildActionButtons(),
+                )
+              else
+                Row(
+                  children: _buildActionButtons(),
+                ),
             ],
           ),
           const SizedBox(height: 10),
@@ -269,42 +282,70 @@ class PersonalSearchPage extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text("Items por página: "),
-              DropdownButton<int>(
-                value: 10,
-                items: [10, 20, 50]
-                    .map((item) => DropdownMenuItem<int>(
-                          value: item,
-                          child: Text(item.toString()),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  // Acción para cambiar la cantidad de items por página
-                },
-              ),
-              const SizedBox(width: 20),
-              Text("1 - 10 de 2001"),
-              IconButton(
-                icon: const Icon(Icons.chevron_left),
-                onPressed: () {
-                  // Acción para ir a la página anterior
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.chevron_right),
-                onPressed: () {
-                  // Acción para ir a la siguiente página
-                },
-              ),
-            ],
-          ),
         ],
       ),
     );
+  }
+
+  List<Widget> _buildActionButtons() {
+    return [
+      ElevatedButton.icon(
+        onPressed: () {
+          // Acción para actualización masiva
+        },
+        icon: const Icon(
+          Icons.refresh,
+          size: 18,
+          color: AppTheme.infoColor,
+        ),
+        label: const Text("Actualización masiva",
+            style: TextStyle(fontSize: 16, color: AppTheme.infoColor)),
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          backgroundColor: AppTheme.primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: const BorderSide(color: AppTheme.primaryColor),
+          ),
+        ),
+      ),
+      const SizedBox(width: 10),
+      ElevatedButton.icon(
+        onPressed: () {
+          // Acción para descargar Excel
+        },
+        icon:
+            const Icon(Icons.download, size: 18, color: AppTheme.primaryColor),
+        label: const Text("Descargar Excel",
+            style: TextStyle(fontSize: 16, color: AppTheme.primaryColor)),
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: const BorderSide(color: AppTheme.primaryColor),
+          ),
+        ),
+      ),
+      const SizedBox(width: 10),
+      ElevatedButton.icon(
+        onPressed: () {
+          // Acción para agregar nuevo personal
+        },
+        icon:
+            const Icon(Icons.add, size: 18, color: AppTheme.primaryBackground),
+        label: const Text("Nuevo personal",
+            style: TextStyle(fontSize: 16, color: AppTheme.primaryBackground)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppTheme.primaryColor,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: const BorderSide(color: AppTheme.primaryColor),
+          ),
+        ),
+      ),
+    ];
   }
 
   DataRow _buildDataRow(String codigo, String nombre, String documento,
