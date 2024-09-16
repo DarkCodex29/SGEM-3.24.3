@@ -30,9 +30,9 @@ class PersonalSearchPage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildFormSection(), // Sección del formulario
+            _buildFormSection(),
             const SizedBox(height: 20),
-            _buildResultsSection(), // Sección de resultados
+            _buildResultsSection(),
           ],
         ),
       ),

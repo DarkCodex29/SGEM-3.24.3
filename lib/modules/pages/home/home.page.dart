@@ -14,10 +14,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isLargeScreen = screenWidth > 800;
+    bool isSmallScreen = screenWidth <= 400;
     bool isHome = selectedIndex == 0;
 
     final List<Widget> pages = [
-      _buildHomeContent(),
+      _buildHomeContent(isLargeScreen, isSmallScreen),
       PersonalSearchPage(),
       const Center(child: Text("Búsqueda de Monitoreos")),
       const Center(child: Text("Búsqueda de Capacitaciones")),
@@ -25,77 +28,75 @@ class _HomePageState extends State<HomePage> {
       const Center(child: Text("Administración")),
     ];
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        bool isLargeScreen = constraints.maxWidth > 800;
+    return Scaffold(
+      appBar: _buildAppBar(isSmallScreen),
+      drawer:
+          isHome || !isLargeScreen ? Drawer(child: _buildDrawerItems()) : null,
+      body: Row(
+        children: [
+          if (!isHome && isLargeScreen) Drawer(child: _buildDrawerItems()),
+          Expanded(
+            child: pages[selectedIndex],
+          ),
+        ],
+      ),
+    );
+  }
 
-        return Scaffold(
-          appBar: AppBar(
-            backgroundColor: AppTheme.backgroundBlue,
-            iconTheme: const IconThemeData(color: Colors.white),
-            title: Row(
+  AppBar _buildAppBar(bool isSmallScreen) {
+    return AppBar(
+      backgroundColor: AppTheme.backgroundBlue,
+      iconTheme: const IconThemeData(color: Colors.white),
+      title: Row(
+        children: [
+          if (!isSmallScreen)
+            Image.asset(
+              'assets/images/logo.png',
+              height: 40,
+            ),
+          if (!isSmallScreen) const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              isSmallScreen ? 'GEM' : 'Gestión de Entrenamiento Mina',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: isSmallScreen ? 16 : 20,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+      actions: const [
+        Row(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(
-                  'assets/images/logo.png',
-                  height: 40,
-                ),
-                const SizedBox(width: 10),
-                const Text(
-                  'Gestión de Entrenamiento Mina',
+                Text(
+                  'Felipe Cordova',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16),
+                ),
+                Text(
+                  'Administrador',
+                  style: TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ],
             ),
-            actions: const [
-              Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Felipe Cordova',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16),
-                      ),
-                      Text(
-                        'Administrador',
-                        style: TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                    ],
-                  ),
-                  SizedBox(width: 8),
-                  CircleAvatar(
-                    backgroundImage:
-                        AssetImage('assets/images/user_avatar.png'),
-                    radius: 18,
-                  ),
-                  SizedBox(width: 16),
-                ],
-              ),
-            ],
-          ),
-          drawer: isHome || !isLargeScreen
-              ? Drawer(
-                  child: _buildDrawerItems(),
-                )
-              : null,
-          body: Row(
-            children: [
-              if (!isHome && isLargeScreen)
-                Drawer(
-                  child: _buildDrawerItems(),
-                ),
-              Expanded(child: pages[selectedIndex]),
-            ],
-          ),
-        );
-      },
+            SizedBox(width: 8),
+            CircleAvatar(
+              backgroundImage: AssetImage('assets/images/user_avatar.png'),
+              radius: 18,
+            ),
+            SizedBox(width: 16),
+          ],
+        ),
+      ],
     );
   }
 
@@ -161,55 +162,57 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildHomeContent() {
-    return Padding(
-      padding: const EdgeInsets.all(40),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            color: Colors.grey[200],
-            padding: const EdgeInsets.all(20),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  '¡Bienvenido al Sistema de Gestión de Entrenamiento Mina!',
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryText),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'Nos complace recibirte en nuestra plataforma, dedicada a la formación y desarrollo de nuestros colaboradores. Este sistema está diseñado para proporcionarte las herramientas y recursos necesarios para garantizar tu crecimiento profesional y asegurar el cumplimiento de los más altos estándares de seguridad y eficiencia en nuestras operaciones.',
-                  style: TextStyle(
-                      fontSize: 16, color: AppTheme.primaryText, height: 1.5),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+  Widget _buildHomeContent(bool isLargeScreen, bool isSmallScreen) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.all(isLargeScreen ? 40 : 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              color: Colors.grey[200],
+              padding: const EdgeInsets.all(20),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    '¡Bienvenido al Sistema de Gestión de Entrenamiento Mina!',
+                    style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primaryText),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Nos complace recibirte en nuestra plataforma, dedicada a la formación y desarrollo de nuestros colaboradores. Este sistema está diseñado para proporcionarte las herramientas y recursos necesarios para garantizar tu crecimiento profesional y asegurar el cumplimiento de los más altos estándares de seguridad y eficiencia en nuestras operaciones.',
+                    style: TextStyle(
+                        fontSize: 16, color: AppTheme.primaryText, height: 1.5),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 40),
-          Center(
-            child: Wrap(
-              spacing: 24,
-              runSpacing: 24,
-              alignment: WrapAlignment.center,
-              children: [
-                _buildCard('Búsqueda de entrenamiento de personal',
-                    Icons.people, Colors.blue, Colors.blueAccent),
-                _buildCard('Consulta de entrenamientos', Icons.school,
-                    Colors.lightBlue, Colors.lightBlueAccent),
-                _buildCard('Búsqueda de monitoreos', Icons.monitor, Colors.teal,
-                    Colors.tealAccent),
-                _buildCard('Búsqueda de capacitaciones', Icons.book,
-                    Colors.orange, Colors.deepOrangeAccent),
-              ],
+            const SizedBox(height: 40),
+            Center(
+              child: Wrap(
+                spacing: isLargeScreen ? 24 : 12,
+                runSpacing: isLargeScreen ? 24 : 12,
+                alignment: WrapAlignment.center,
+                children: [
+                  _buildCard('Búsqueda de entrenamiento de personal',
+                      Icons.people, Colors.blue, Colors.blueAccent),
+                  _buildCard('Consulta de entrenamientos', Icons.school,
+                      Colors.lightBlue, Colors.lightBlueAccent),
+                  _buildCard('Búsqueda de monitoreos', Icons.monitor,
+                      Colors.teal, Colors.tealAccent),
+                  _buildCard('Búsqueda de capacitaciones', Icons.book,
+                      Colors.orange, Colors.deepOrangeAccent),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
