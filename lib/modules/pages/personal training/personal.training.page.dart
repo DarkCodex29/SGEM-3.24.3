@@ -1,24 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:sgem/config/theme/app_theme.dart';
+import 'package:sgem/modules/pages/personal%20training/new.personal.page.dart';
 import 'package:sgem/shared/widgets/custom.dropdown.dart';
 import 'package:sgem/shared/widgets/custom.textfield.dart';
 
-class PersonalSearchPage extends StatelessWidget {
+class PersonalSearchPage extends StatefulWidget {
+  PersonalSearchPage({super.key});
+
+  @override
+  State<PersonalSearchPage> createState() => _PersonalSearchPageState();
+}
+
+class _PersonalSearchPageState extends State<PersonalSearchPage> {
   final TextEditingController codigoMCPController = TextEditingController();
   final TextEditingController documentoIdentidadController =
       TextEditingController();
   final TextEditingController nombresController = TextEditingController();
   final TextEditingController apellidosController = TextEditingController();
 
-  PersonalSearchPage({super.key});
+  bool showNewPersonalForm = false; // Variable para alternar entre vistas
+
+  // Función para mostrar el formulario de "Nuevo Personal"
+  Widget _buildNewPersonalForm() {
+    return NuevoPersonalPage(); // Puedes modificar el contenido de esta página según tu diseño
+  }
+
+  // Función para mostrar la página de búsqueda de personal
+  Widget _buildSearchPage() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        bool isSmallScreen = constraints.maxWidth < 600;
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildFormSection(isSmallScreen),
+              const SizedBox(height: 20),
+              _buildResultsSection(isSmallScreen),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Búsqueda de entrenamiento de personal",
-          style: TextStyle(
+        title: Text(
+          showNewPersonalForm
+              ? "Nuevo personal a Entrenar"
+              : "Búsqueda de entrenamiento de personal",
+          style: const TextStyle(
             color: AppTheme.backgroundBlue,
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -26,25 +60,11 @@ class PersonalSearchPage extends StatelessWidget {
         ),
         backgroundColor: AppTheme.primaryBackground,
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          bool isSmallScreen = constraints.maxWidth < 600;
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                _buildFormSection(isSmallScreen), // Sección del formulario
-                const SizedBox(height: 20),
-                _buildResultsSection(isSmallScreen), // Sección de resultados
-              ],
-            ),
-          );
-        },
-      ),
+      body: showNewPersonalForm ? _buildNewPersonalForm() : _buildSearchPage(),
     );
   }
 
-  // Sección del formulario
+  // Sección del formulario de búsqueda
   Widget _buildFormSection(bool isSmallScreen) {
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -224,6 +244,7 @@ class PersonalSearchPage extends StatelessWidget {
     );
   }
 
+  // Acción para limpiar los campos
   void _clearFields() {
     codigoMCPController.clear();
     documentoIdentidadController.clear();
@@ -231,6 +252,7 @@ class PersonalSearchPage extends StatelessWidget {
     apellidosController.clear();
   }
 
+  // Función que construye la sección de resultados
   Widget _buildResultsSection(bool isSmallScreen) {
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -249,7 +271,6 @@ class PersonalSearchPage extends StatelessWidget {
                 "Personal",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              // Botones debajo si es pantalla pequeña
               if (isSmallScreen)
                 Column(
                   children: _buildActionButtons(),
@@ -287,6 +308,7 @@ class PersonalSearchPage extends StatelessWidget {
     );
   }
 
+  // Botones de acción
   List<Widget> _buildActionButtons() {
     return [
       ElevatedButton.icon(
@@ -298,8 +320,10 @@ class PersonalSearchPage extends StatelessWidget {
           size: 18,
           color: AppTheme.infoColor,
         ),
-        label: const Text("Actualización masiva",
-            style: TextStyle(fontSize: 16, color: AppTheme.infoColor)),
+        label: const Text(
+          "Actualización masiva",
+          style: TextStyle(fontSize: 16, color: AppTheme.infoColor),
+        ),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           backgroundColor: AppTheme.primaryColor,
@@ -316,8 +340,10 @@ class PersonalSearchPage extends StatelessWidget {
         },
         icon:
             const Icon(Icons.download, size: 18, color: AppTheme.primaryColor),
-        label: const Text("Descargar Excel",
-            style: TextStyle(fontSize: 16, color: AppTheme.primaryColor)),
+        label: const Text(
+          "Descargar Excel",
+          style: TextStyle(fontSize: 16, color: AppTheme.primaryColor),
+        ),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           backgroundColor: Colors.white,
@@ -330,12 +356,17 @@ class PersonalSearchPage extends StatelessWidget {
       const SizedBox(width: 10),
       ElevatedButton.icon(
         onPressed: () {
-          // Acción para agregar nuevo personal
+          setState(() {
+            showNewPersonalForm =
+                true; // Alterna a la vista del formulario de "Nuevo Personal"
+          });
         },
         icon:
             const Icon(Icons.add, size: 18, color: AppTheme.primaryBackground),
-        label: const Text("Nuevo personal",
-            style: TextStyle(fontSize: 16, color: AppTheme.primaryBackground)),
+        label: const Text(
+          "Nuevo personal",
+          style: TextStyle(fontSize: 16, color: AppTheme.primaryBackground),
+        ),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -348,6 +379,7 @@ class PersonalSearchPage extends StatelessWidget {
     ];
   }
 
+  // Datos de la tabla
   DataRow _buildDataRow(String codigo, String nombre, String documento,
       String guardia, String estado) {
     return DataRow(

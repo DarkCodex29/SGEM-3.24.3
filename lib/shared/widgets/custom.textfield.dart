@@ -6,6 +6,7 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final bool isPassword;
   final TextInputType keyboardType;
+  final IconData? icon; // Añadido para soportar el ícono
 
   const CustomTextField({
     super.key,
@@ -13,6 +14,7 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
     this.isPassword = false,
     this.keyboardType = TextInputType.text,
+    this.icon, // Añadido
   });
 
   @override
@@ -28,6 +30,9 @@ class CustomTextField extends StatelessWidget {
           labelStyle: const TextStyle(
             color: AppTheme.primaryText,
           ),
+          suffixIcon: icon != null // Si el ícono es proporcionado
+              ? Icon(icon, color: AppTheme.primaryColor)
+              : null, // No mostrar ícono si no se proporciona
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(

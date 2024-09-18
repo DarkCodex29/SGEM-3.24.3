@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sgem/config/theme/app_theme.dart';
-import 'package:sgem/modules/pages/personal%20training/personal.training.dart';
+import 'package:sgem/modules/pages/personal%20training/personal.training.page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
