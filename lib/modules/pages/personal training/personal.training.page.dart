@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:sgem/config/theme/app_theme.dart';
+import 'package:sgem/modules/pages/personal%20training/edit.personal.page.dart';
 import 'package:sgem/modules/pages/personal%20training/new.personal.page.dart';
 import 'package:sgem/shared/widgets/custom.dropdown.dart';
 import 'package:sgem/shared/widgets/custom.textfield.dart';
+import 'package:sgem/shared/widgets/widget.delete.motivo.dart';
 
 class PersonalSearchPage extends StatefulWidget {
-  PersonalSearchPage({super.key});
+  const PersonalSearchPage({super.key});
 
   @override
   State<PersonalSearchPage> createState() => _PersonalSearchPageState();
@@ -18,14 +20,18 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
   final TextEditingController nombresController = TextEditingController();
   final TextEditingController apellidosController = TextEditingController();
 
-  bool showNewPersonalForm = false; // Variable para alternar entre vistas
+  bool showNewPersonalForm = false;
+  bool showEditPersonalForm = false;
+  bool _isExpanded = true;
 
-  // Función para mostrar el formulario de "Nuevo Personal"
   Widget _buildNewPersonalForm() {
-    return NuevoPersonalPage(); // Puedes modificar el contenido de esta página según tu diseño
+    return NuevoPersonalPage();
   }
 
-  // Función para mostrar la página de búsqueda de personal
+  Widget _buildEditPersonalForm() {
+    return EditPersonalPage();
+  }
+
   Widget _buildSearchPage() {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -51,7 +57,9 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
         title: Text(
           showNewPersonalForm
               ? "Nuevo personal a Entrenar"
-              : "Búsqueda de entrenamiento de personal",
+              : showEditPersonalForm
+                  ? "Editar personal"
+                  : "Búsqueda de entrenamiento de personal",
           style: const TextStyle(
             color: AppTheme.backgroundBlue,
             fontSize: 24,
@@ -60,191 +68,211 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
         ),
         backgroundColor: AppTheme.primaryBackground,
       ),
-      body: showNewPersonalForm ? _buildNewPersonalForm() : _buildSearchPage(),
+      body: showNewPersonalForm
+          ? _buildNewPersonalForm()
+          : showEditPersonalForm
+              ? _buildEditPersonalForm()
+              : _buildSearchPage(),
     );
   }
 
-  // Sección del formulario de búsqueda
   Widget _buildFormSection(bool isSmallScreen) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+    return ExpansionTile(
+      title: const Text(
+        "Filtro de búsqueda",
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
-      child: Column(
-        children: [
-          isSmallScreen
-              ? Column(
-                  children: [
-                    CustomTextField(
-                      label: "Código MCP",
-                      controller: codigoMCPController,
-                    ),
-                    const SizedBox(height: 10),
-                    CustomTextField(
-                      label: "Documento de identidad",
-                      controller: documentoIdentidadController,
-                    ),
-                    const SizedBox(height: 10),
-                    CustomDropdown(
-                      hintText: "Guardia",
-                      options: ["A", "B", "C", "D", "Todos"],
-                      isSearchable: false,
-                      onChanged: (value) {},
-                    ),
-                    const SizedBox(height: 10),
-                    CustomTextField(
-                      label: "Nombres personal",
-                      controller: nombresController,
-                    ),
-                    const SizedBox(height: 10),
-                    CustomTextField(
-                      label: "Apellidos personal",
-                      controller: apellidosController,
-                    ),
-                    const SizedBox(height: 10),
-                    CustomDropdown(
-                      hintText: "Estado",
-                      options: ["Activo", "Inactivo", "Todos"],
-                      isSearchable: false,
-                      onChanged: (value) {},
-                    ),
-                  ],
-                )
-              : Row(
-                  children: [
-                    Expanded(
-                      child: CustomTextField(
-                        label: "Código MCP",
-                        controller: codigoMCPController,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: CustomTextField(
-                        label: "Documento de identidad",
-                        controller: documentoIdentidadController,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: CustomDropdown(
-                        hintText: "Guardia",
-                        options: ["A", "B", "C", "D", "Todos"],
-                        isSearchable: false,
-                        onChanged: (value) {},
-                      ),
-                    ),
-                  ],
-                ),
-          const SizedBox(height: 10),
-          isSmallScreen
-              ? Column(
-                  children: [
-                    CustomTextField(
-                      label: "Nombres personal",
-                      controller: nombresController,
-                    ),
-                    const SizedBox(height: 10),
-                    CustomTextField(
-                      label: "Apellidos personal",
-                      controller: apellidosController,
-                    ),
-                    const SizedBox(height: 10),
-                    CustomDropdown(
-                      hintText: "Estado",
-                      options: ["Activo", "Inactivo", "Todos"],
-                      isSearchable: false,
-                      onChanged: (value) {},
-                    ),
-                  ],
-                )
-              : Row(
-                  children: [
-                    Expanded(
-                      child: CustomTextField(
-                        label: "Nombres personal",
-                        controller: nombresController,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: CustomTextField(
-                        label: "Apellidos personal",
-                        controller: apellidosController,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: CustomDropdown(
-                        hintText: "Estado",
-                        options: ["Activo", "Inactivo", "Todos"],
-                        isSearchable: false,
-                        onChanged: (value) {},
-                      ),
-                    ),
-                  ],
-                ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+      initiallyExpanded: _isExpanded,
+      onExpansionChanged: (value) {
+        setState(() {
+          _isExpanded = value;
+        });
+      },
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Column(
             children: [
-              ElevatedButton.icon(
-                onPressed: _clearFields, // Funcionalidad para limpiar campos
-                icon: const Icon(
-                  Icons.cleaning_services,
-                  size: 18,
-                  color: AppTheme.primaryText,
-                ),
-                label: const Text(
-                  "Limpiar",
-                  style: TextStyle(fontSize: 16, color: AppTheme.primaryText),
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 49, vertical: 18),
-                  backgroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: const BorderSide(color: AppTheme.alternateColor),
+              isSmallScreen
+                  ? Column(
+                      children: [
+                        CustomTextField(
+                          label: "Código MCP",
+                          controller: codigoMCPController,
+                        ),
+                        const SizedBox(height: 10),
+                        CustomTextField(
+                          label: "Documento de identidad",
+                          controller: documentoIdentidadController,
+                        ),
+                        const SizedBox(height: 10),
+                        CustomDropdown(
+                          hintText: "Guardia",
+                          options: const ["A", "B", "C", "D", "Todos"],
+                          isSearchable: false,
+                          onChanged: (value) {},
+                        ),
+                        const SizedBox(height: 10),
+                        CustomTextField(
+                          label: "Nombres personal",
+                          controller: nombresController,
+                        ),
+                        const SizedBox(height: 10),
+                        CustomTextField(
+                          label: "Apellidos personal",
+                          controller: apellidosController,
+                        ),
+                        const SizedBox(height: 10),
+                        CustomDropdown(
+                          hintText: "Estado",
+                          options: const ["Activo", "Inactivo", "Todos"],
+                          isSearchable: false,
+                          onChanged: (value) {},
+                        ),
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        Expanded(
+                          child: CustomTextField(
+                            label: "Código MCP",
+                            controller: codigoMCPController,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: CustomTextField(
+                            label: "Documento de identidad",
+                            controller: documentoIdentidadController,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: CustomDropdown(
+                            hintText: "Guardia",
+                            options: const ["A", "B", "C", "D", "Todos"],
+                            isSearchable: false,
+                            onChanged: (value) {},
+                          ),
+                        ),
+                      ],
+                    ),
+              const SizedBox(height: 10),
+              isSmallScreen
+                  ? Column(
+                      children: [
+                        CustomTextField(
+                          label: "Nombres personal",
+                          controller: nombresController,
+                        ),
+                        const SizedBox(height: 10),
+                        CustomTextField(
+                          label: "Apellidos personal",
+                          controller: apellidosController,
+                        ),
+                        const SizedBox(height: 10),
+                        CustomDropdown(
+                          hintText: "Estado",
+                          options: const ["Activo", "Inactivo", "Todos"],
+                          isSearchable: false,
+                          onChanged: (value) {},
+                        ),
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        Expanded(
+                          child: CustomTextField(
+                            label: "Nombres personal",
+                            controller: nombresController,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: CustomTextField(
+                            label: "Apellidos personal",
+                            controller: apellidosController,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: CustomDropdown(
+                            hintText: "Estado",
+                            options: const ["Activo", "Inactivo", "Todos"],
+                            isSearchable: false,
+                            onChanged: (value) {},
+                          ),
+                        ),
+                      ],
+                    ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: _clearFields,
+                    icon: const Icon(
+                      Icons.cleaning_services,
+                      size: 18,
+                      color: AppTheme.primaryText,
+                    ),
+                    label: const Text(
+                      "Limpiar",
+                      style:
+                          TextStyle(fontSize: 16, color: AppTheme.primaryText),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 49, vertical: 18),
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: const BorderSide(color: AppTheme.alternateColor),
+                      ),
+                      elevation: 0,
+                    ),
                   ),
-                  elevation: 0,
-                ),
-              ),
-              const SizedBox(width: 10),
-              ElevatedButton.icon(
-                onPressed: () {
-                  // Acción para buscar
-                },
-                icon: const Icon(
-                  Icons.search,
-                  size: 18,
-                  color: Colors.white,
-                ),
-                label: const Text(
-                  "Buscar",
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 49, vertical: 18),
-                  backgroundColor: AppTheme.primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                  const SizedBox(width: 10),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _isExpanded = false;
+                      });
+                      // Acción para buscar
+                    },
+                    icon: const Icon(
+                      Icons.search,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      "Buscar",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 49, vertical: 18),
+                      backgroundColor: AppTheme.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 2,
+                    ),
                   ),
-                  elevation: 2,
-                ),
-              ),
+                ],
+              )
             ],
-          )
-        ],
-      ),
+          ),
+        ),
+      ],
     );
   }
 
-  // Acción para limpiar los campos
   void _clearFields() {
     codigoMCPController.clear();
     documentoIdentidadController.clear();
@@ -252,7 +280,6 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
     apellidosController.clear();
   }
 
-  // Función que construye la sección de resultados
   Widget _buildResultsSection(bool isSmallScreen) {
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -308,7 +335,6 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
     );
   }
 
-  // Botones de acción
   List<Widget> _buildActionButtons() {
     return [
       ElevatedButton.icon(
@@ -357,8 +383,7 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
       ElevatedButton.icon(
         onPressed: () {
           setState(() {
-            showNewPersonalForm =
-                true; // Alterna a la vista del formulario de "Nuevo Personal"
+            showNewPersonalForm = true;
           });
         },
         icon:
@@ -379,7 +404,6 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
     ];
   }
 
-  // Datos de la tabla
   DataRow _buildDataRow(String codigo, String nombre, String documento,
       String guardia, String estado) {
     return DataRow(
@@ -409,31 +433,208 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
             Text(estado),
           ],
         )),
-        DataCell(
-          Row(
-            children: [
-              IconButton(
-                onPressed: () {
-                  // Acción de editar
-                },
-                icon: const Icon(Icons.edit),
-              ),
-              IconButton(
-                onPressed: () {
-                  // Acción de borrar
-                },
-                icon: const Icon(Icons.delete),
-              ),
-              IconButton(
-                onPressed: () {
-                  // Acción de ver detalles
-                },
-                icon: const Icon(Icons.visibility),
-              ),
-            ],
+        DataCell(Expanded(
+          flex: 3,
+          child: Align(
+            alignment: const AlignmentDirectional(-1, 0),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // Botón Editar
+                Align(
+                  alignment: const AlignmentDirectional(-1, 0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(2),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.edit,
+                        color: AppTheme.primaryColor, // Define color primario
+                        size: 18,
+                      ),
+                      onPressed: () {
+                        // Navegar a la página de editar personal
+                        Navigator.of(context).pushNamed('EditarPersonal');
+                      },
+                    ),
+                  ),
+                ),
+                // Botón Eliminar
+                Align(
+                  alignment: const AlignmentDirectional(-1, 0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(2),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.delete,
+                        color: AppTheme.errorColor,
+                        size: 18,
+                      ),
+                      onPressed: () async {
+                        // Mostrar el modal para eliminar el personal
+                        await showModalBottomSheet(
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          enableDrag: false,
+                          context: context,
+                          builder: (context) {
+                            return GestureDetector(
+                              onTap: () => FocusScope.of(context).unfocus(),
+                              child: Padding(
+                                padding: MediaQuery.of(context).viewInsets,
+                                child: const EliminarMotivoWidget(),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                // Botón Entrenamientos
+                Align(
+                  alignment: const AlignmentDirectional(-1, 0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(2),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.model_training_sharp,
+                        color: AppTheme.warningColor,
+                        size: 18,
+                      ),
+                      onPressed: () {
+                        // Navegar a la página de entrenamientos
+                        Navigator.of(context).pushNamed('Entrenamientos');
+                      },
+                    ),
+                  ),
+                ),
+                // Botón VCanet (Ver carnet)
+                Align(
+                  alignment: const AlignmentDirectional(-1, 0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(2),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.credit_card_rounded,
+                        color: AppTheme.greenColor,
+                        size: 18,
+                      ),
+                      onPressed: () {
+                        // Navegar a la página de VCanet
+                        Navigator.of(context).pushNamed('VCanet');
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+        )),
       ],
+    );
+  }
+
+  void _showDeleteConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.4,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: const BoxDecoration(
+                    color: AppTheme.backgroundBlue,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12.0),
+                      topRight: Radius.circular(12.0),
+                    ),
+                  ),
+                  child: const Text(
+                    'Eliminar',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Ingrese el motivo de la eliminación:',
+                      style: TextStyle(
+                          fontSize: 16, color: AppTheme.backgroundBlue),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  child: TextField(
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.all(10),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          side: BorderSide(color: Colors.grey.shade400),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 12),
+                        ),
+                        child: const Text(
+                          'Cerrar',
+                          style: TextStyle(fontSize: 16, color: Colors.black),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          side: const BorderSide(color: Colors.red),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 12),
+                        ),
+                        child: const Text(
+                          'Eliminar',
+                          style: TextStyle(fontSize: 16, color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

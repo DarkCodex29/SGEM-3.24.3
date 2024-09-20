@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sgem/config/theme/app_theme.dart';
 import 'package:sgem/modules/pages/personal%20training/personal.training.page.dart';
+import 'package:sgem/shared/widgets/widget.perfil.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,6 +13,31 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
 
+  OverlayEntry? _overlayEntry;
+
+  void _showPerfilOverlay(BuildContext context) {
+    OverlayState overlayState = Overlay.of(context);
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) {
+        return const Positioned(
+          top: 80,
+          child: Material(
+            color: Colors.transparent,
+            child: PerfilWidget(),
+          ),
+        );
+      },
+    );
+
+    overlayState.insert(_overlayEntry!);
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -21,7 +47,7 @@ class _HomePageState extends State<HomePage> {
 
     final List<Widget> pages = [
       _buildHomeContent(isLargeScreen, isSmallScreen),
-      PersonalSearchPage(),
+      const PersonalSearchPage(),
       const Center(child: Text("Búsqueda de Monitoreos")),
       const Center(child: Text("Búsqueda de Capacitaciones")),
       const Center(child: Text("Consultar Entrenamiento")),
@@ -68,32 +94,42 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      actions: const [
+      actions: [
         Row(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Felipe Cordova',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16),
-                ),
-                Text(
-                  'Administrador',
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ],
+            InkWell(
+              onTap: () {
+                _showPerfilOverlay(context);
+              },
+              child: const Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Felipe Cordova',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
+                      ),
+                      Text(
+                        'Administrador',
+                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                  SizedBox(width: 8),
+                  CircleAvatar(
+                    backgroundImage:
+                        AssetImage('assets/images/user_avatar.png'),
+                    radius: 18,
+                  ),
+                  SizedBox(width: 16),
+                ],
+              ),
             ),
-            SizedBox(width: 8),
-            CircleAvatar(
-              backgroundImage: AssetImage('assets/images/user_avatar.png'),
-              radius: 18,
-            ),
-            SizedBox(width: 16),
           ],
         ),
       ],

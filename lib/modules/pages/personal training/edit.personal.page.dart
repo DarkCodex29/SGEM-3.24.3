@@ -3,26 +3,33 @@ import 'package:sgem/config/theme/app_theme.dart';
 import 'package:sgem/shared/widgets/custom.dropdown.dart';
 import 'package:sgem/shared/widgets/custom.textfield.dart';
 
-class NuevoPersonalPage extends StatelessWidget {
-  final TextEditingController dniController = TextEditingController();
-  final TextEditingController codigoLicenciaController =
-      TextEditingController();
-  final TextEditingController restriccionesController = TextEditingController();
+class EditPersonalPage extends StatelessWidget {
+  final TextEditingController dniController;
+  final TextEditingController codigoLicenciaController;
+  final TextEditingController restriccionesController;
 
-  NuevoPersonalPage({super.key});
+  // Constructor que acepta valores iniciales opcionales
+  EditPersonalPage({
+    super.key,
+    String? dni,
+    String? codigoLicencia,
+    String? restricciones,
+  })  : dniController = TextEditingController(text: dni),
+        codigoLicenciaController = TextEditingController(text: codigoLicencia),
+        restriccionesController = TextEditingController(text: restricciones);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0), // Se incrementa el padding general
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeaderSection(),
-            const SizedBox(height: 30), // Más espacio entre secciones
+            const SizedBox(height: 30),
             _buildDatosAdicionalesSection(),
-            const SizedBox(height: 30), // Más espacio entre secciones
+            const SizedBox(height: 30),
             _buildButtons(context),
           ],
         ),
@@ -33,7 +40,7 @@ class NuevoPersonalPage extends StatelessWidget {
   // Header section with personal details
   Widget _buildHeaderSection() {
     return Container(
-      padding: const EdgeInsets.all(20.0), // Se incrementa el padding interno
+      padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -47,7 +54,7 @@ class NuevoPersonalPage extends StatelessWidget {
             children: [
               CircleAvatar(
                 backgroundImage: AssetImage('assets/images/user_avatar.png'),
-                radius: 95, // Tamaño 190x190
+                radius: 95,
                 backgroundColor: Colors.grey,
               ),
               SizedBox(height: 10),
@@ -63,27 +70,23 @@ class NuevoPersonalPage extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(width: 30), // Más separación entre avatar y contenido
+          const SizedBox(width: 30),
           // Rest of the details in columns
           Expanded(
             child: Column(
               children: [
                 Row(
                   children: [
-                    // Columna 1 (DNI, Nombres, Puesto de Trabajo)
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: 200, // Se reduce el tamaño del campo DNI
-                            child: CustomTextField(
-                              label: "DNI",
-                              controller: dniController,
-                              icon: Icons.search,
-                            ),
+                          CustomTextField(
+                            label: "DNI",
+                            controller: dniController,
+                            icon: Icons.person,
                           ),
-                          const SizedBox(height: 15), // Mayor separación
+                          const SizedBox(height: 15),
                           const Text(
                             "Nombres",
                             style: TextStyle(fontSize: 12),
@@ -92,7 +95,7 @@ class NuevoPersonalPage extends StatelessWidget {
                             "Raul Antonio",
                             style: TextStyle(fontSize: 14),
                           ),
-                          const SizedBox(height: 15), // Mayor separación
+                          const SizedBox(height: 15),
                           const Text(
                             "Puesto de Trabajo",
                             style: TextStyle(fontSize: 12),
@@ -104,35 +107,30 @@ class NuevoPersonalPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 20), // Espaciado entre columnas
-                    // Columna 2 (Código, Apellido Paterno, Gerencia)
-                    const Expanded(
+                    const SizedBox(width: 20),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "Código",
-                            style: TextStyle(fontSize: 12),
+                          CustomTextField(
+                            label: "Código Licencia",
+                            controller: codigoLicenciaController,
                           ),
-                          Text(
-                            "10254",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          SizedBox(height: 15),
-                          Text(
+                          const SizedBox(height: 15),
+                          const Text(
                             "Apellido Paterno",
                             style: TextStyle(fontSize: 12),
                           ),
-                          Text(
+                          const Text(
                             "Alania",
                             style: TextStyle(fontSize: 14),
                           ),
-                          SizedBox(height: 15),
-                          Text(
+                          const SizedBox(height: 15),
+                          const Text(
                             "Gerencia",
                             style: TextStyle(fontSize: 12),
                           ),
-                          Text(
+                          const Text(
                             "Mina",
                             style: TextStyle(fontSize: 14),
                           ),
@@ -206,12 +204,7 @@ class NuevoPersonalPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
-                      children: [
-                        Text("Categoría Licencia"),
-                        Text("*", style: TextStyle(color: Colors.red)),
-                      ],
-                    ),
+                    const Text("Categoría Licencia"),
                     CustomDropdown(
                       hintText: "Categoría Licencia",
                       options: const ["A", "B", "C", "D"],
@@ -223,157 +216,82 @@ class NuevoPersonalPage extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Text(""),
-                        Text("*", style: TextStyle(color: Colors.red)),
-                      ],
-                    ),
-                    CustomTextField(
-                      label: "Código Licencia",
-                      controller: codigoLicenciaController,
-                    ),
-                  ],
+                child: CustomTextField(
+                  label: "Código Licencia",
+                  controller: codigoLicenciaController,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Text(""),
-                        Text("*", style: TextStyle(color: Colors.red)),
-                      ],
-                    ),
-                    CustomTextField(
-                      label: "Fecha Ingreso a Mina",
-                      controller: TextEditingController(),
-                      icon: Icons.calendar_today,
-                    ),
-                  ],
+                child: CustomTextField(
+                  label: "Fecha Ingreso a Mina",
+                  controller: TextEditingController(),
+                  icon: Icons.calendar_today,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Text(""),
-                        Text("*", style: TextStyle(color: Colors.red)),
-                      ],
-                    ),
-                    CustomTextField(
-                      label: "Fecha de Revalidación",
-                      controller: TextEditingController(),
-                      icon: Icons.calendar_today,
-                    ),
-                  ],
+                child: CustomTextField(
+                  label: "Fecha de Revalidación",
+                  controller: TextEditingController(),
+                  icon: Icons.calendar_today,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Text(""),
-                        Text("*", style: TextStyle(color: Colors.red)),
-                      ],
-                    ),
-                    CustomDropdown(
-                      hintText: "Guardia",
-                      options: const ["Mañana", "Tarde", "Noche"],
-                      isSearchable: false,
-                      onChanged: (value) {},
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text("Restricciones"),
-                    CustomTextField(
-                      label: "Restricciones",
-                      controller: restriccionesController,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          const Text("Autorizado para operar en:"),
-          Row(
-            children: [
-              Checkbox(
-                value: true, // valor verdadero como ejemplo
-                onChanged: (bool? value) {},
-              ),
-              const Text("Operaciones mina"),
-              const SizedBox(width: 20),
-              Checkbox(
-                value: true, // valor verdadero como ejemplo
-                onChanged: (bool? value) {},
-              ),
-              const Text("Zonas o plataforma"),
-            ],
-          ),
-          const SizedBox(height: 20),
-          _buildArchivoSection(), // Adjuntar archivo como una sección
-        ],
-      ),
-    );
-  }
-
-  Widget _buildArchivoSection() {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Adjuntar archivo:", style: TextStyle(fontSize: 16)),
           const SizedBox(height: 10),
           Row(
             children: [
-              const Icon(Icons.attach_file, color: Colors.grey),
-              const Text(
-                "(Archivo adjunto peso máx: 4MB)",
-                style: TextStyle(color: Colors.grey),
+              Expanded(
+                child: CustomDropdown(
+                  hintText: "Guardia",
+                  options: const ["Mañana", "Tarde", "Noche"],
+                  isSearchable: false,
+                  onChanged: (value) {},
+                ),
               ),
-              const SizedBox(width: 20),
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.close, color: Colors.red),
-                label: const Text("Ficha-modulo.jpg",
-                    style: TextStyle(color: Colors.red)),
+              const SizedBox(width: 10),
+              Expanded(
+                child: CustomTextField(
+                  label: "Restricciones",
+                  controller: restriccionesController,
+                ),
               ),
             ],
           ),
+          const SizedBox(height: 10),
+          _buildArchivoSection(),
         ],
       ),
     );
   }
 
+  // Sección para adjuntar archivo
+  Widget _buildArchivoSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("Adjuntar archivo:", style: TextStyle(fontSize: 16)),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            const Icon(Icons.attach_file, color: Colors.grey),
+            const Text("(Archivo adjunto peso máx: 4MB)",
+                style: TextStyle(color: Colors.grey)),
+            const SizedBox(width: 20),
+            TextButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.close, color: Colors.red),
+              label: const Text("Documento.pdf",
+                  style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // Botones de acción
   Widget _buildButtons(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -391,7 +309,7 @@ class NuevoPersonalPage extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () {
-            // Acción de guardar personal
+            // Lógica para guardar los datos editados
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.primaryColor,
