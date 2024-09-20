@@ -78,6 +78,10 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
 
   Widget _buildFormSection(bool isSmallScreen) {
     return ExpansionTile(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Colors.white),
+      ),
       title: const Text(
         "Filtro de búsqueda",
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
