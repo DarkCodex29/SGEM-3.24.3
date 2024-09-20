@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sgem/config/theme/app_theme.dart';
+import 'package:sgem/shared/widgets/widget.delete.personal.confirmation.dart';
 
 class EliminarMotivoWidget extends StatefulWidget {
   const EliminarMotivoWidget({super.key});
@@ -106,7 +107,6 @@ class _EliminarMotivoWidgetState extends State<EliminarMotivoWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        // Evita desbordamiento ajustando el ancho dinámicamente
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
                           child: Container(
@@ -155,7 +155,8 @@ class _EliminarMotivoWidgetState extends State<EliminarMotivoWidget> {
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
-                              side: const BorderSide(color: AppTheme.alternateColor),
+                              side: const BorderSide(
+                                  color: AppTheme.alternateColor),
                             ),
                           ),
                           child: const Text(
@@ -168,7 +169,16 @@ class _EliminarMotivoWidgetState extends State<EliminarMotivoWidget> {
                         padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
                         child: ElevatedButton(
                           onPressed: () {
-                            // Acción de eliminar
+                            Navigator.pop(context);
+                            Future.delayed(const Duration(milliseconds: 300),
+                                () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return const MensajeEliminadoWidget(); // Aquí llamamos al modal que queremos mostrar
+                                },
+                              );
+                            });
                           },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(

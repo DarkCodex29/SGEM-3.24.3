@@ -309,24 +309,146 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
             ],
           ),
           const SizedBox(height: 10),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columns: const <DataColumn>[
-                DataColumn(label: Text('Código MCP')),
-                DataColumn(label: Text('Nombres personal')),
-                DataColumn(label: Text('Documento de identidad')),
-                DataColumn(label: Text('Guardia')),
-                DataColumn(label: Text('Estado de vigencia de personal')),
-                DataColumn(label: Text('Acciones')),
-              ],
-              rows: <DataRow>[
-                _buildDataRow(
-                    '2563', 'Randy Peterson', '47915139', 'A', 'Activo'),
-                _buildDataRow(
-                    '2563', 'Randy Peterson', '47915139', 'A', 'Inactivo'),
-                _buildDataRow(
-                    '2563', 'Randy Peterson', '47915139', 'A', 'Activo'),
+          // Encabezado personalizado y tabla dentro del mismo contenedor
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey.shade300,
+                  width: 1,
+                ),
+              ),
+            ),
+            child: Column(
+              children: [
+                // Encabezado de la tabla
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
+                  child: Container(
+                    height: 40,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFF1F4F8),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(8),
+                        topRight: Radius.circular(8),
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              'Código MCP',
+                              style: TextStyle(
+                                fontFamily: 'Plus Jakarta Sans',
+                                color: Color(0xFF606A85),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              'Nombres personal',
+                              style: TextStyle(
+                                fontFamily: 'Plus Jakarta Sans',
+                                color: Color(0xFF606A85),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              'Documento de identidad',
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                fontFamily: 'Plus Jakarta Sans',
+                                color: Color(0xFF606A85),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding:
+                                  EdgeInsetsDirectional.fromSTEB(40, 0, 0, 0),
+                              child: Text(
+                                'Guardia',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontFamily: 'Plus Jakarta Sans',
+                                  color: Color(0xFF606A85),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              'Estado de vigencia de personal',
+                              style: TextStyle(
+                                fontFamily: 'Univers',
+                                color: Color(0xFF606A85),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Align(
+                              alignment: AlignmentDirectional.centerEnd,
+                              child: Text(
+                                'Acciones',
+                                textAlign: TextAlign.end,
+                                style: TextStyle(
+                                  fontFamily: 'Plus Jakarta Sans',
+                                  color: Color(0xFF606A85),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 1),
+                // Tabla de datos
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    headingRowHeight: 0,
+                    columns: const <DataColumn>[
+                      DataColumn(label: Text('')),
+                      DataColumn(label: Text('')),
+                      DataColumn(label: Text('')),
+                      DataColumn(label: Text('')),
+                      DataColumn(label: Text('')),
+                      DataColumn(label: Text('')),
+                    ],
+                    rows: <DataRow>[
+                      _buildDataRow(
+                          '2563', 'Randy Peterson', '47915139', 'A', 'Activo'),
+                      _buildDataRow('2563', 'Randy Peterson', '47915139', 'A',
+                          'Inactivo'),
+                      _buildDataRow(
+                          '2563', 'Randy Peterson', '47915139', 'A', 'Activo'),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -449,11 +571,10 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                     child: IconButton(
                       icon: const Icon(
                         Icons.edit,
-                        color: AppTheme.primaryColor, // Define color primario
+                        color: AppTheme.primaryColor,
                         size: 18,
                       ),
                       onPressed: () {
-                        // Navegar a la página de editar personal
                         Navigator.of(context).pushNamed('EditarPersonal');
                       },
                     ),
@@ -532,109 +653,6 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
           ),
         )),
       ],
-    );
-  }
-
-  void _showDeleteConfirmationDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.4,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: const BoxDecoration(
-                    color: AppTheme.backgroundBlue,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12.0),
-                      topRight: Radius.circular(12.0),
-                    ),
-                  ),
-                  child: const Text(
-                    'Eliminar',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Ingrese el motivo de la eliminación:',
-                      style: TextStyle(
-                          fontSize: 16, color: AppTheme.backgroundBlue),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.0),
-                  child: TextField(
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.all(10),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          side: BorderSide(color: Colors.grey.shade400),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 12),
-                        ),
-                        child: const Text(
-                          'Cerrar',
-                          style: TextStyle(fontSize: 16, color: Colors.black),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          side: const BorderSide(color: Colors.red),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 12),
-                        ),
-                        child: const Text(
-                          'Eliminar',
-                          style: TextStyle(fontSize: 16, color: Colors.red),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

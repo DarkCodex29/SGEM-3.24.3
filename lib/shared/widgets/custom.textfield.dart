@@ -6,7 +6,8 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final bool isPassword;
   final TextInputType keyboardType;
-  final IconData? icon; // Añadido para soportar el ícono
+  final IconData? icon;
+  final bool isRequired;
 
   const CustomTextField({
     super.key,
@@ -14,43 +15,61 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
     this.isPassword = false,
     this.keyboardType = TextInputType.text,
-    this.icon, // Añadido
+    this.icon,
+    this.isRequired = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextField(
-        controller: controller,
-        obscureText: isPassword,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(
-            color: AppTheme.primaryText,
-          ),
-          suffixIcon: icon != null // Si el ícono es proporcionado
-              ? Icon(icon, color: AppTheme.primaryColor)
-              : null, // No mostrar ícono si no se proporciona
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(
-              color: AppTheme.alternateColor,
-              width: 2.0,
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              obscureText: isPassword,
+              keyboardType: keyboardType,
+              decoration: InputDecoration(
+                labelText: label,
+                labelStyle: const TextStyle(
+                  color: AppTheme.primaryText,
+                ),
+                suffixIcon: icon != null
+                    ? Icon(icon, color: AppTheme.primaryColor)
+                    : null,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(
+                    color: AppTheme.alternateColor,
+                    width: 2.0,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(
+                    color: AppTheme.primaryColor,
+                    width: 2.0,
+                  ),
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                floatingLabelBehavior: FloatingLabelBehavior.auto,
+              ),
             ),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(
-              color: AppTheme.primaryColor,
-              width: 2.0,
+          if (isRequired)
+            const Padding(
+              padding: EdgeInsets.only(left: 6, bottom: 16),
+              child: Text(
+                '*',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 16,
+                ),
+              ),
             ),
-          ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          floatingLabelBehavior: FloatingLabelBehavior.auto,
-        ),
+        ],
       ),
     );
   }

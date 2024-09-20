@@ -15,14 +15,14 @@ class NuevoPersonalPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0), // Se incrementa el padding general
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeaderSection(),
-            const SizedBox(height: 30), // Más espacio entre secciones
+            const SizedBox(height: 30),
             _buildDatosAdicionalesSection(),
-            const SizedBox(height: 30), // Más espacio entre secciones
+            const SizedBox(height: 30),
             _buildButtons(context),
           ],
         ),
@@ -30,10 +30,9 @@ class NuevoPersonalPage extends StatelessWidget {
     );
   }
 
-  // Header section with personal details
   Widget _buildHeaderSection() {
     return Container(
-      padding: const EdgeInsets.all(20.0), // Se incrementa el padding interno
+      padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -42,12 +41,11 @@ class NuevoPersonalPage extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Avatar
           const Column(
             children: [
               CircleAvatar(
                 backgroundImage: AssetImage('assets/images/user_avatar.png'),
-                radius: 95, // Tamaño 190x190
+                radius: 95,
                 backgroundColor: Colors.grey,
               ),
               SizedBox(height: 10),
@@ -63,27 +61,25 @@ class NuevoPersonalPage extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(width: 30), // Más separación entre avatar y contenido
-          // Rest of the details in columns
+          const SizedBox(width: 30),
           Expanded(
             child: Column(
               children: [
                 Row(
                   children: [
-                    // Columna 1 (DNI, Nombres, Puesto de Trabajo)
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            width: 200, // Se reduce el tamaño del campo DNI
+                            width: 200,
                             child: CustomTextField(
                               label: "DNI",
                               controller: dniController,
                               icon: Icons.search,
                             ),
                           ),
-                          const SizedBox(height: 15), // Mayor separación
+                          const SizedBox(height: 15),
                           const Text(
                             "Nombres",
                             style: TextStyle(fontSize: 12),
@@ -92,7 +88,7 @@ class NuevoPersonalPage extends StatelessWidget {
                             "Raul Antonio",
                             style: TextStyle(fontSize: 14),
                           ),
-                          const SizedBox(height: 15), // Mayor separación
+                          const SizedBox(height: 15),
                           const Text(
                             "Puesto de Trabajo",
                             style: TextStyle(fontSize: 12),
@@ -104,8 +100,7 @@ class NuevoPersonalPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 20), // Espaciado entre columnas
-                    // Columna 2 (Código, Apellido Paterno, Gerencia)
+                    const SizedBox(width: 20),
                     const Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,8 +134,7 @@ class NuevoPersonalPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 20), // Espaciado entre columnas
-                    // Columna 3 (Fecha de Ingreso, Apellido Materno, Área)
+                    const SizedBox(width: 20),
                     const Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,78 +197,38 @@ class NuevoPersonalPage extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Text("Categoría Licencia"),
-                        Text("*", style: TextStyle(color: Colors.red)),
-                      ],
-                    ),
-                    CustomDropdown(
-                      hintText: "Categoría Licencia",
-                      options: const ["A", "B", "C", "D"],
-                      isSearchable: false,
-                      onChanged: (value) {},
-                    ),
-                  ],
+                child: CustomDropdown(
+                  hintText: "Categoría Licencia",
+                  options: const ["A", "B", "C", "D"],
+                  isSearchable: false,
+                  onChanged: (value) {},
+                  isRequired: true,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Text(""),
-                        Text("*", style: TextStyle(color: Colors.red)),
-                      ],
-                    ),
-                    CustomTextField(
-                      label: "Código Licencia",
-                      controller: codigoLicenciaController,
-                    ),
-                  ],
+                child: CustomTextField(
+                  label: "Código de licencia",
+                  controller: codigoLicenciaController,
+                  isRequired: true,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Text(""),
-                        Text("*", style: TextStyle(color: Colors.red)),
-                      ],
-                    ),
-                    CustomTextField(
-                      label: "Fecha Ingreso a Mina",
-                      controller: TextEditingController(),
-                      icon: Icons.calendar_today,
-                    ),
-                  ],
+                child: CustomTextField(
+                  label: "Fecha ingreso a mina",
+                  controller: TextEditingController(),
+                  icon: Icons.calendar_today,
+                  isRequired: true,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Text(""),
-                        Text("*", style: TextStyle(color: Colors.red)),
-                      ],
-                    ),
-                    CustomTextField(
-                      label: "Fecha de Revalidación",
-                      controller: TextEditingController(),
-                      icon: Icons.calendar_today,
-                    ),
-                  ],
+                child: CustomTextField(
+                  label: "Fecha de revalidación",
+                  controller: TextEditingController(),
+                  icon: Icons.calendar_today,
+                  isRequired: true,
                 ),
               ),
             ],
@@ -283,94 +237,77 @@ class NuevoPersonalPage extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Text(""),
-                        Text("*", style: TextStyle(color: Colors.red)),
-                      ],
-                    ),
-                    CustomDropdown(
-                      hintText: "Guardia",
-                      options: const ["Mañana", "Tarde", "Noche"],
-                      isSearchable: false,
-                      onChanged: (value) {},
-                    ),
-                  ],
+                child: CustomDropdown(
+                  hintText: "Guardia",
+                  options: const ["Mañana", "Tarde", "Noche"],
+                  isSearchable: false,
+                  onChanged: (value) {},
+                  isRequired: true,
                 ),
               ),
               const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              const Expanded(
+                child: Text("Autorizado para operar en:"),
+              ),
+              const Expanded(
+                child: Row(
                   children: [
-                    const Text("Restricciones"),
-                    CustomTextField(
-                      label: "Restricciones",
-                      controller: restriccionesController,
-                    ),
+                    Checkbox(value: true, onChanged: null),
+                    Text("Operaciones mina"),
+                  ],
+                ),
+              ),
+              const Expanded(
+                child: Row(
+                  children: [
+                    Checkbox(value: true, onChanged: null),
+                    Text("Zonas o plataforma"),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 20),
-          const Text("Autorizado para operar en:"),
-          Row(
-            children: [
-              Checkbox(
-                value: true, // valor verdadero como ejemplo
-                onChanged: (bool? value) {},
-              ),
-              const Text("Operaciones mina"),
-              const SizedBox(width: 20),
-              Checkbox(
-                value: true, // valor verdadero como ejemplo
-                onChanged: (bool? value) {},
-              ),
-              const Text("Zonas o plataforma"),
-            ],
+          const Text("Restricciones"),
+          CustomTextField(
+            label: "Restricciones",
+            controller: restriccionesController,
           ),
           const SizedBox(height: 20),
-          _buildArchivoSection(), // Adjuntar archivo como una sección
+          _buildArchivoSection(),
         ],
       ),
     );
   }
 
   Widget _buildArchivoSection() {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Adjuntar archivo:", style: TextStyle(fontSize: 16)),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              const Icon(Icons.attach_file, color: Colors.grey),
-              const Text(
-                "(Archivo adjunto peso máx: 4MB)",
-                style: TextStyle(color: Colors.grey),
-              ),
-              const SizedBox(width: 20),
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.close, color: Colors.red),
-                label: const Text("Ficha-modulo.jpg",
-                    style: TextStyle(color: Colors.red)),
-              ),
-            ],
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Row(
+          children: [
+            Icon(Icons.attach_file, color: Colors.grey),
+            SizedBox(width: 10),
+            Text("Adjuntar archivo:"),
+            SizedBox(width: 10),
+            Text(
+              "(Archivo adjunto peso máx: 4MB)",
+              style: TextStyle(color: Colors.grey),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            TextButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.close, color: Colors.red),
+              label: const Text("Ficha-modulo.jpg",
+                  style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

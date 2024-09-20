@@ -7,6 +7,7 @@ class CustomDropdown extends StatefulWidget {
   final bool isSearchable;
   final String? selectedValue;
   final Function(String?) onChanged;
+  final bool isRequired;
 
   const CustomDropdown({
     required this.hintText,
@@ -14,6 +15,7 @@ class CustomDropdown extends StatefulWidget {
     required this.onChanged,
     this.selectedValue,
     this.isSearchable = false,
+    this.isRequired = false, // Agregado
     super.key,
   });
 
@@ -34,57 +36,76 @@ class _CustomDropdownState extends State<CustomDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 50,
-          child: DropdownButtonFormField<String>(
-            value: selectedValue,
-            isExpanded: true,
-            hint: Text(
-              widget.hintText,
-              style: const TextStyle(
-                color: AppTheme.primaryText,
-                fontSize: 16,
-              ),
-            ),
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(
-                  color: AppTheme.alternateColor,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 50,
+                  child: DropdownButtonFormField<String>(
+                    value: selectedValue,
+                    isExpanded: true,
+                    hint: Text(
+                      widget.hintText,
+                      style: const TextStyle(
+                        color: AppTheme.primaryText,
+                        fontSize: 16,
+                      ),
+                    ),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: AppTheme.alternateColor,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: AppTheme.alternateColor,
+                          width: 2.0,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 14.0,
+                        horizontal: 12.0,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedValue = value;
+                      });
+                      widget.onChanged(value);
+                    },
+                    items: filteredOptions.map((String option) {
+                      return DropdownMenuItem<String>(
+                        value: option,
+                        child: Text(option),
+                      );
+                    }).toList(),
+                  ),
                 ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(
-                  color: AppTheme.alternateColor,
-                  width: 2.0,
-                ),
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 14.0,
-                horizontal: 12.0,
-              ),
+                if (widget.isSearchable) _buildSearchBar(),
+              ],
             ),
-            onChanged: (value) {
-              setState(() {
-                selectedValue = value;
-              });
-              widget.onChanged(value);
-            },
-            items: filteredOptions.map((String option) {
-              return DropdownMenuItem<String>(
-                value: option,
-                child: Text(option),
-              );
-            }).toList(),
           ),
-        ),
-        if (widget.isSearchable)
-          _buildSearchBar(),
-      ],
+          if (widget.isRequired)
+            const Padding(
+              padding: EdgeInsets.only(left: 6, bottom: 16),
+              child: Text(
+                '*',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
