@@ -2,14 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:sgem/config/theme/app_theme.dart';
 import 'package:sgem/shared/widgets/custom.dropdown.dart';
 import 'package:sgem/shared/widgets/custom.textfield.dart';
+import 'new.personal.controller.dart';
 
 class NuevoPersonalPage extends StatelessWidget {
-  final TextEditingController dniController = TextEditingController();
-  final TextEditingController codigoLicenciaController =
-      TextEditingController();
-  final TextEditingController restriccionesController = TextEditingController();
+  final NewPersonalController controller = NewPersonalController();
+  final bool isEditing;
+  final TextEditingController dniController;
+  final TextEditingController nombresController;
+  final TextEditingController apellidosController;
+  final TextEditingController codigoMCPController;
+  final VoidCallback onCancel;
 
-  NuevoPersonalPage({super.key});
+  NuevoPersonalPage({
+    required this.isEditing,
+    required this.dniController,
+    required this.nombresController,
+    required this.apellidosController,
+    required this.codigoMCPController,
+    required this.onCancel,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +65,7 @@ class NuevoPersonalPage extends StatelessWidget {
                 children: [
                   Icon(Icons.circle, color: Colors.green, size: 12),
                   SizedBox(width: 5),
-                  Text(
-                    "Activo",
-                    style: TextStyle(fontSize: 14),
-                  ),
+                  Text("Activo", style: TextStyle(fontSize: 14)),
                 ],
               ),
             ],
@@ -71,99 +80,79 @@ class NuevoPersonalPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: 200,
-                            child: CustomTextField(
-                              label: "DNI",
-                              controller: dniController,
-                              icon: Icons.search,
-                            ),
+                          CustomTextField(
+                            label: "DNI",
+                            controller: controller.dniController,
+                            icon: isEditing ? null : Icons.search,
+                            isReadOnly: isEditing,
+                            onIconPressed: () async {
+                              if (!isEditing) {
+                                await controller.buscarPersonalPorDni(
+                                    controller.dniController.text);
+                              }
+                            },
                           ),
                           const SizedBox(height: 15),
-                          const Text(
-                            "Nombres",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          const Text(
-                            "Raul Antonio",
-                            style: TextStyle(fontSize: 14),
+                          CustomTextField(
+                            label: "Nombres",
+                            controller: controller.nombresController,
+                            isReadOnly: true,
                           ),
                           const SizedBox(height: 15),
-                          const Text(
-                            "Puesto de Trabajo",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          const Text(
-                            "Operador Equipo Pesado",
-                            style: TextStyle(fontSize: 14),
+                          CustomTextField(
+                            label: "Puesto de Trabajo",
+                            controller: controller.puestoTrabajoController,
+                            isReadOnly: true,
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(width: 20),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "Código",
-                            style: TextStyle(fontSize: 12),
+                          CustomTextField(
+                            label: "Código",
+                            controller: controller.codigoController,
+                            isReadOnly: true,
                           ),
-                          Text(
-                            "10254",
-                            style: TextStyle(fontSize: 14),
+                          const SizedBox(height: 15),
+                          CustomTextField(
+                            label: "Apellido Paterno",
+                            controller: controller.apellidoPaternoController,
+                            isReadOnly: true,
                           ),
-                          SizedBox(height: 15),
-                          Text(
-                            "Apellido Paterno",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          Text(
-                            "Alania",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          SizedBox(height: 15),
-                          Text(
-                            "Gerencia",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          Text(
-                            "Mina",
-                            style: TextStyle(fontSize: 14),
+                          const SizedBox(height: 15),
+                          CustomTextField(
+                            label: "Gerencia",
+                            controller: controller.gerenciaController,
+                            isReadOnly: true,
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(width: 20),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "Fecha Ingreso",
-                            style: TextStyle(fontSize: 12),
+                          CustomTextField(
+                            label: "Fecha Ingreso",
+                            controller: controller.fechaIngresoController,
+                            isReadOnly: true,
                           ),
-                          Text(
-                            "10-05-2024",
-                            style: TextStyle(fontSize: 14),
+                          const SizedBox(height: 15),
+                          CustomTextField(
+                            label: "Apellido Materno",
+                            controller: controller.apellidoMaternoController,
+                            isReadOnly: true,
                           ),
-                          SizedBox(height: 15),
-                          Text(
-                            "Apellido Materno",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          Text(
-                            "Chuco",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          SizedBox(height: 15),
-                          Text(
-                            "Área",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          Text(
-                            "Operaciones Mina",
-                            style: TextStyle(fontSize: 14),
+                          const SizedBox(height: 15),
+                          CustomTextField(
+                            label: "Área",
+                            controller: controller.areaController,
+                            isReadOnly: true,
                           ),
                         ],
                       ),
@@ -209,7 +198,7 @@ class NuevoPersonalPage extends StatelessWidget {
               Expanded(
                 child: CustomTextField(
                   label: "Código de licencia",
-                  controller: codigoLicenciaController,
+                  controller: controller.codigoLicenciaController,
                   isRequired: true,
                 ),
               ),
@@ -270,8 +259,8 @@ class NuevoPersonalPage extends StatelessWidget {
           const SizedBox(height: 20),
           const Text("Restricciones"),
           CustomTextField(
-            label: "Restricciones",
-            controller: restriccionesController,
+            label: "",
+            controller: controller.restriccionesController,
           ),
           const SizedBox(height: 20),
           _buildArchivoSection(),
@@ -316,9 +305,7 @@ class NuevoPersonalPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: onCancel,
           style: TextButton.styleFrom(
             backgroundColor: Colors.white,
             side: const BorderSide(color: Colors.grey),
@@ -328,7 +315,7 @@ class NuevoPersonalPage extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () {
-            // Acción de guardar personal
+            // Acción de guardar, según sea edición o nuevo
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.primaryColor,

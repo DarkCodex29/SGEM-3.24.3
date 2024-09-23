@@ -8,6 +8,8 @@ class CustomTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final IconData? icon;
   final bool isRequired;
+  final Function()? onIconPressed;
+  final bool isReadOnly;
 
   const CustomTextField({
     super.key,
@@ -17,6 +19,8 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.icon,
     this.isRequired = false,
+    this.onIconPressed,
+    this.isReadOnly = false,
   });
 
   @override
@@ -30,13 +34,17 @@ class CustomTextField extends StatelessWidget {
               controller: controller,
               obscureText: isPassword,
               keyboardType: keyboardType,
+              readOnly: isReadOnly,
               decoration: InputDecoration(
                 labelText: label,
                 labelStyle: const TextStyle(
                   color: AppTheme.primaryText,
                 ),
                 suffixIcon: icon != null
-                    ? Icon(icon, color: AppTheme.primaryColor)
+                    ? IconButton(
+                        icon: Icon(icon, color: AppTheme.primaryColor),
+                        onPressed: onIconPressed,
+                      )
                     : null,
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sgem/config/theme/app_theme.dart';
-import 'package:sgem/shared/widgets/widget.delete.personal.confirmation.dart';
+import 'package:sgem/shared/widgets/widget.delete.personal.dart';
 
 class EliminarMotivoWidget extends StatefulWidget {
   const EliminarMotivoWidget({super.key});
@@ -59,7 +59,7 @@ class _EliminarMotivoWidgetState extends State<EliminarMotivoWidget> {
                           style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w600,
-                              color: AppTheme.primaryBackground),
+                              color: Colors.white),
                         ),
                       ),
                       InkWell(
@@ -100,7 +100,7 @@ class _EliminarMotivoWidgetState extends State<EliminarMotivoWidget> {
                   width: double.infinity,
                   height: 120,
                   decoration: const BoxDecoration(
-                    color: AppTheme.accent4,
+                    color: Colors.white,
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
@@ -112,7 +112,7 @@ class _EliminarMotivoWidgetState extends State<EliminarMotivoWidget> {
                           child: Container(
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: AppTheme.alternateColor,
+                                color: Colors.white,
                               ),
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -170,15 +170,15 @@ class _EliminarMotivoWidgetState extends State<EliminarMotivoWidget> {
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.pop(context);
-                            Future.delayed(const Duration(milliseconds: 300),
-                                () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return const MensajeEliminadoWidget(); // Aquí llamamos al modal que queremos mostrar
-                                },
-                              );
-                            });
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return const Material(
+                                  type: MaterialType.transparency,
+                                  child: EliminarPersonalWidget(),
+                                );
+                              },
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(

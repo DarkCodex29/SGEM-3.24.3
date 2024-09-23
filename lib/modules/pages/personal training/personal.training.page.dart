@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sgem/config/theme/app_theme.dart';
-import 'package:sgem/modules/pages/personal%20training/edit.personal.page.dart';
-import 'package:sgem/modules/pages/personal%20training/new.personal.page.dart';
+import 'package:sgem/modules/pages/personal%20training/personal/new.personal.page.dart';
+import 'package:sgem/modules/pages/personal%20training/personal.training.controller.dart';
+import 'package:sgem/modules/pages/personal%20training/training/training.personal.page.dart';
 import 'package:sgem/shared/widgets/custom.dropdown.dart';
 import 'package:sgem/shared/widgets/custom.textfield.dart';
 import 'package:sgem/shared/widgets/widget.delete.motivo.dart';
@@ -14,22 +15,25 @@ class PersonalSearchPage extends StatefulWidget {
 }
 
 class _PersonalSearchPageState extends State<PersonalSearchPage> {
-  final TextEditingController codigoMCPController = TextEditingController();
-  final TextEditingController documentoIdentidadController =
-      TextEditingController();
-  final TextEditingController nombresController = TextEditingController();
-  final TextEditingController apellidosController = TextEditingController();
-
-  bool showNewPersonalForm = false;
-  bool showEditPersonalForm = false;
-  bool _isExpanded = true;
+  final PersonalSearchController controller = PersonalSearchController();
 
   Widget _buildNewPersonalForm() {
-    return NuevoPersonalPage();
+    return NuevoPersonalPage(
+      isEditing: controller.showEditPersonalForm,
+      dniController: controller.documentoIdentidadController,
+      nombresController: controller.nombresController,
+      apellidosController: controller.apellidosController,
+      codigoMCPController: controller.codigoMCPController,
+      onCancel: _handleCancel,
+    );
   }
 
-  Widget _buildEditPersonalForm() {
-    return EditPersonalPage();
+  void _handleCancel() {
+    setState(() {
+      controller.showNewPersonalForm = false;
+      controller.showEditPersonalForm = false;
+      controller.showTrainingForm = false;
+    });
   }
 
   Widget _buildSearchPage() {
@@ -55,11 +59,13 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          showNewPersonalForm
+          controller.showNewPersonalForm
               ? "Nuevo personal a Entrenar"
-              : showEditPersonalForm
+              : controller.showEditPersonalForm
                   ? "Editar personal"
-                  : "Búsqueda de entrenamiento de personal",
+                  : controller.showTrainingForm
+                      ? "Entrenamientos"
+                      : "Búsqueda de entrenamiento de personal",
           style: const TextStyle(
             color: AppTheme.backgroundBlue,
             fontSize: 24,
@@ -68,10 +74,10 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
         ),
         backgroundColor: AppTheme.primaryBackground,
       ),
-      body: showNewPersonalForm
+      body: controller.showNewPersonalForm || controller.showEditPersonalForm
           ? _buildNewPersonalForm()
-          : showEditPersonalForm
-              ? _buildEditPersonalForm()
+          : controller.showTrainingForm
+              ? const TrainingPersonalPage()
               : _buildSearchPage(),
     );
   }
@@ -86,10 +92,10 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
         "Filtro de búsqueda",
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
-      initiallyExpanded: _isExpanded,
+      initiallyExpanded: controller.isExpanded,
       onExpansionChanged: (value) {
         setState(() {
-          _isExpanded = value;
+          controller.toggleExpansion();
         });
       },
       children: [
@@ -107,12 +113,12 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                       children: [
                         CustomTextField(
                           label: "Código MCP",
-                          controller: codigoMCPController,
+                          controller: controller.codigoMCPController,
                         ),
                         const SizedBox(height: 10),
                         CustomTextField(
                           label: "Documento de identidad",
-                          controller: documentoIdentidadController,
+                          controller: controller.documentoIdentidadController,
                         ),
                         const SizedBox(height: 10),
                         CustomDropdown(
@@ -124,12 +130,12 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                         const SizedBox(height: 10),
                         CustomTextField(
                           label: "Nombres personal",
-                          controller: nombresController,
+                          controller: controller.nombresController,
                         ),
                         const SizedBox(height: 10),
                         CustomTextField(
                           label: "Apellidos personal",
-                          controller: apellidosController,
+                          controller: controller.apellidosController,
                         ),
                         const SizedBox(height: 10),
                         CustomDropdown(
@@ -145,14 +151,14 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                         Expanded(
                           child: CustomTextField(
                             label: "Código MCP",
-                            controller: codigoMCPController,
+                            controller: controller.codigoMCPController,
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: CustomTextField(
                             label: "Documento de identidad",
-                            controller: documentoIdentidadController,
+                            controller: controller.documentoIdentidadController,
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -172,12 +178,12 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                       children: [
                         CustomTextField(
                           label: "Nombres personal",
-                          controller: nombresController,
+                          controller: controller.nombresController,
                         ),
                         const SizedBox(height: 10),
                         CustomTextField(
                           label: "Apellidos personal",
-                          controller: apellidosController,
+                          controller: controller.apellidosController,
                         ),
                         const SizedBox(height: 10),
                         CustomDropdown(
@@ -193,14 +199,14 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                         Expanded(
                           child: CustomTextField(
                             label: "Nombres personal",
-                            controller: nombresController,
+                            controller: controller.nombresController,
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: CustomTextField(
                             label: "Apellidos personal",
-                            controller: apellidosController,
+                            controller: controller.apellidosController,
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -219,7 +225,7 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   ElevatedButton.icon(
-                    onPressed: _clearFields,
+                    onPressed: controller.clearFields,
                     icon: const Icon(
                       Icons.cleaning_services,
                       size: 18,
@@ -245,7 +251,7 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                   ElevatedButton.icon(
                     onPressed: () {
                       setState(() {
-                        _isExpanded = false;
+                        controller.toggleExpansion();
                       });
                       // Acción para buscar
                     },
@@ -277,13 +283,6 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
     );
   }
 
-  void _clearFields() {
-    codigoMCPController.clear();
-    documentoIdentidadController.clear();
-    nombresController.clear();
-    apellidosController.clear();
-  }
-
   Widget _buildResultsSection(bool isSmallScreen) {
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -313,7 +312,6 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
             ],
           ),
           const SizedBox(height: 10),
-          // Encabezado personalizado y tabla dentro del mismo contenedor
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -326,7 +324,6 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
             ),
             child: Column(
               children: [
-                // Encabezado de la tabla
                 Padding(
                   padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
                   child: Container(
@@ -509,7 +506,7 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
       ElevatedButton.icon(
         onPressed: () {
           setState(() {
-            showNewPersonalForm = true;
+            controller.showNewPersonal();
           });
         },
         icon:
@@ -579,7 +576,9 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                         size: 18,
                       ),
                       onPressed: () {
-                        Navigator.of(context).pushNamed('EditarPersonal');
+                        setState(() {
+                          controller.showEditPersonal();
+                        });
                       },
                     ),
                   ),
@@ -628,8 +627,9 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                         size: 18,
                       ),
                       onPressed: () {
-                        // Navegar a la página de entrenamientos
-                        Navigator.of(context).pushNamed('Entrenamientos');
+                        setState(() {
+                          controller.showTraining();
+                        });
                       },
                     ),
                   ),

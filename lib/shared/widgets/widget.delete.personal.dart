@@ -110,17 +110,27 @@ class _EliminarPersonalWidgetState extends State<EliminarPersonalWidget> {
                           ),
                         ),
                         const SizedBox(width: 12),
+                        //TODO: Implementar la eliminación de personal
                         ElevatedButton(
                           onPressed: () async {
-                            Navigator.pop(context); // Cierra el modal actual
+                            if (Navigator.canPop(context)) {
+                              Navigator.pop(context);
+                            }
                             await Future.delayed(
-                                const Duration(milliseconds: 200));
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return const MensajeEliminadoWidget();
-                              },
-                            );
+                                const Duration(milliseconds: 300));
+
+                            if (mounted) {
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (BuildContext context) {
+                                  return const Material(
+                                    type: MaterialType.transparency,
+                                    child: MensajeEliminadoWidget(),
+                                  );
+                                },
+                              );
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
@@ -137,7 +147,7 @@ class _EliminarPersonalWidgetState extends State<EliminarPersonalWidget> {
                               fontSize: 16,
                             ),
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sgem/config/theme/app_theme.dart';
 import 'package:sgem/modules/pages/home/home.page.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 

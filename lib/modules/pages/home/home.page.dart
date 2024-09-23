@@ -7,13 +7,16 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   int selectedIndex = 0;
 
   OverlayEntry? _overlayEntry;
+
+  @override
+  bool get wantKeepAlive => true;
 
   void _showPerfilOverlay(BuildContext context) {
     OverlayState overlayState = Overlay.of(context);
@@ -29,17 +32,13 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
-
     overlayState.insert(_overlayEntry!);
-  }
-
-  void _removeOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     double screenWidth = MediaQuery.of(context).size.width;
     bool isLargeScreen = screenWidth > 800;
     bool isSmallScreen = screenWidth <= 400;
@@ -62,7 +61,10 @@ class _HomePageState extends State<HomePage> {
         children: [
           if (!isHome && isLargeScreen) Drawer(child: _buildDrawerItems()),
           Expanded(
-            child: pages[selectedIndex],
+            child: IndexedStack(
+              index: selectedIndex,
+              children: pages,
+            ),
           ),
         ],
       ),
