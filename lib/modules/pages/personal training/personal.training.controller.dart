@@ -1,19 +1,50 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:sgem/config/api/api.personal.dart';
 
 class PersonalSearchController {
-  // Controladores de los TextField
   final TextEditingController codigoMCPController = TextEditingController();
-  final TextEditingController documentoIdentidadController = TextEditingController();
+  final TextEditingController documentoIdentidadController =
+      TextEditingController();
   final TextEditingController nombresController = TextEditingController();
   final TextEditingController apellidosController = TextEditingController();
 
-  // Variables de estado
+  final PersonalService personalService = PersonalService();
+
   bool showNewPersonalForm = false;
   bool showEditPersonalForm = false;
   bool showTrainingForm = false;
   bool isExpanded = true;
 
-  // Métodos para manejar la expansión y limpieza de los campos
+  List<Map<String, dynamic>> personalResults = [];
+
+  Future<void> searchPersonal() async {
+    String? codigoMcp =
+        codigoMCPController.text.isEmpty ? null : codigoMCPController.text;
+    String? numeroDocumento = documentoIdentidadController.text.isEmpty
+        ? null
+        : documentoIdentidadController.text;
+    String? nombres =
+        nombresController.text.isEmpty ? null : nombresController.text;
+    String? apellidos =
+        apellidosController.text.isEmpty ? null : apellidosController.text;
+
+    try {
+      personalResults = await personalService.listarPersonalEntrenamiento(
+        codigoMcp: codigoMcp,
+        numeroDocumento: numeroDocumento,
+        nombres: nombres,
+        apellidos: apellidos,
+        inGuardia: null,
+        inEstado: null,
+      );
+
+      log('Resultados obtenidos: ${personalResults.length}');
+    } catch (e) {
+      log('Error en la búsqueda: $e');
+    }
+  }
+
   void toggleExpansion() {
     isExpanded = !isExpanded;
   }
@@ -25,17 +56,16 @@ class PersonalSearchController {
     apellidosController.clear();
   }
 
-  // Método para cambiar el estado y mostrar el formulario de nuevo personal
   void showNewPersonal() {
     showNewPersonalForm = true;
     showEditPersonalForm = false;
   }
 
-  // Método para cambiar el estado y mostrar el formulario de editar personal
   void showEditPersonal() {
     showNewPersonalForm = false;
     showEditPersonalForm = true;
   }
+
   void showTraining() {
     showNewPersonalForm = false;
     showEditPersonalForm = false;

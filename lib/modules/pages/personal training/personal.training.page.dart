@@ -249,11 +249,12 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        controller.toggleExpansion();
-                      });
-                      // Acción para buscar
+                    onPressed: () async {
+                      // Realiza la búsqueda
+                      await controller.searchPersonal();
+
+                      // Después de la búsqueda, redibuja la UI para mostrar los resultados
+                      setState(() {});
                     },
                     icon: const Icon(
                       Icons.search,

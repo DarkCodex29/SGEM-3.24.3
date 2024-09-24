@@ -8,6 +8,7 @@ class CustomDropdown extends StatefulWidget {
   final String? selectedValue;
   final Function(String?) onChanged;
   final bool isRequired;
+  final bool isReadOnly; // Agregado para controlar la interactividad
 
   const CustomDropdown({
     required this.hintText,
@@ -15,15 +16,16 @@ class CustomDropdown extends StatefulWidget {
     required this.onChanged,
     this.selectedValue,
     this.isSearchable = false,
-    this.isRequired = false, // Agregado
+    this.isRequired = false,
+    this.isReadOnly = false,
     super.key,
   });
 
   @override
-  _CustomDropdownState createState() => _CustomDropdownState();
+  CustomDropdownState createState() => CustomDropdownState();
 }
 
-class _CustomDropdownState extends State<CustomDropdown> {
+class CustomDropdownState extends State<CustomDropdown> {
   String? selectedValue;
   List<String> filteredOptions = [];
 
@@ -75,21 +77,29 @@ class _CustomDropdownState extends State<CustomDropdown> {
                         horizontal: 12.0,
                       ),
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedValue = value;
-                      });
-                      widget.onChanged(value);
-                    },
+                    onChanged: widget.isReadOnly
+                        ? null // Si es de solo lectura, deshabilitamos la interacción
+                        : (value) {
+                            setState(() {
+                              selectedValue = value;
+                            });
+                            widget.onChanged(value);
+                          },
                     items: filteredOptions.map((String option) {
                       return DropdownMenuItem<String>(
                         value: option,
                         child: Text(option),
                       );
                     }).toList(),
+                    disabledHint: Text(
+                      // Muestra el valor seleccionado pero deshabilitado
+                      selectedValue ?? widget.hintText,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
                   ),
                 ),
-                if (widget.isSearchable) _buildSearchBar(),
+                if (widget.isSearchable && !widget.isReadOnly)
+                  _buildSearchBar(),
               ],
             ),
           ),

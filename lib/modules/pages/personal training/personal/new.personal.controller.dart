@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:sgem/config/api/api.personal.dart';
 
@@ -20,14 +19,14 @@ class NewPersonalController {
   final TextEditingController restriccionesController = TextEditingController();
 
   final PersonalService personalService = PersonalService();
+  Map<String, dynamic> additionalData = {};
 
   Future<void> buscarPersonalPorDni(String dni) async {
     try {
       final personal = await personalService.buscarPersonalPorDni(dni);
 
-      // Manejar mapeo de datos correctamente desde el JSON recibido
-      nombresController.text = personal['PrimerNombre'] ??
-          '' + ' ' + (personal['SegundoNombre'] ?? '');
+      nombresController.text =
+          '${personal['PrimerNombre'] ?? ''} ${personal['SegundoNombre'] ?? ''}';
       puestoTrabajoController.text = personal['Cargo'] ?? '';
       codigoController.text = personal['CodigoMcp'] ?? '';
       apellidoPaternoController.text = personal['ApellidoPaterno'] ?? '';
@@ -38,18 +37,73 @@ class NewPersonalController {
       codigoLicenciaController.text = personal['LicenciaCategoria'] ?? '';
       restriccionesController.text = personal['Restricciones'] ?? '';
 
-      // Aquí puedes manejar el campo Estado que está anidado
+      additionalData = {
+        "TipoPersona": personal['TipoPersona'] ?? '',
+        "InPersonalOrigen": personal['InPersonalOrigen'] ?? 0,
+        "FechaIngresoMina": personal['FechaIngresoMina'] ?? '',
+        "LicenciaConducir": personal['LicenciaConducir'] ?? '',
+        "OperacionMina": personal['OperacionMina'] ?? '',
+        "ZonaPlataforma": personal['ZonaPlataforma'] ?? '',
+        "UsuarioRegistro": personal['UsuarioRegistro'] ?? '',
+        "Estado": personal['Estado'] ?? {},
+        "Eliminado": personal['Eliminado'] ?? '',
+        "MotivoElimina": personal['MotivoElimina'] ?? '',
+        "UsuarioElimina": personal['UsuarioElimina'] ?? '',
+      };
+
       String estado = personal['Estado'] != null
           ? personal['Estado']['Nombre']
           : 'Desconocido';
       log('Estado del personal: $estado');
     } catch (e) {
-      // Manejar errores en caso de fallos
       log('Error al buscar el personal: $e');
     }
   }
 
-  // Función para manejar fechas en formato /Date(...)/
+  Future<void> registrarPersona() async {
+    try {
+      final data = {
+        "Key": 0,
+        "TipoPersona": additionalData['TipoPersona'] ?? "",
+        "InPersonalOrigen": additionalData['InPersonalOrigen'] ?? 0,
+        "FechaIngresoMina": additionalData['FechaIngresoMina'] ?? "",
+        "LicenciaConducir": additionalData['LicenciaConducir'] ?? "",
+        "OperacionMina": additionalData['OperacionMina'] ?? "",
+        "ZonaPlataforma": additionalData['ZonaPlataforma'] ?? "",
+        "Restricciones": restriccionesController.text,
+        "UsuarioRegistro": additionalData['UsuarioRegistro'] ?? "",
+        "UsuarioModifica": "",
+        "CodigoMcp": codigoController.text,
+        "NombreCompleto":
+            '${nombresController.text} ${apellidoPaternoController.text} ${apellidoMaternoController.text}',
+        "Cargo": puestoTrabajoController.text,
+        "NumeroDocumento": dniController.text,
+        "Guardia": {"Key": 0, "Nombre": ""},
+        "Estado": additionalData['Estado'] ?? {"Key": 0, "Nombre": ""},
+        "Eliminado": additionalData['Eliminado'] ?? '',
+        "MotivoElimina": additionalData['MotivoElimina'] ?? '',
+        "UsuarioElimina": additionalData['UsuarioElimina'] ?? '',
+        "ApellidoPaterno": apellidoPaternoController.text,
+        "ApellidoMaterno": apellidoMaternoController.text,
+        "PrimerNombre": nombresController.text.split(' ')[0],
+        "SegundoNombre": nombresController.text.split(' ').length > 1
+            ? nombresController.text.split(' ')[1]
+            : '',
+        "FechaIngreso": DateTime.now().toIso8601String(),
+        "LicenciaCategoria": codigoLicenciaController.text,
+        "LicenciaVencimiento":
+            DateTime.now().add(const Duration(days: 365)).toIso8601String(),
+        "Gerencia": gerenciaController.text,
+        "Area": areaController.text
+      };
+
+      final result = await personalService.registrarPersona(data);
+      log('Persona registrada exitosamente: ${result['Key']}');
+    } catch (e) {
+      log('Error al registrar persona: $e');
+    }
+  }
+
   String _parseJsonDate(String jsonDate) {
     if (jsonDate.isEmpty) return '';
     final timestamp = int.parse(jsonDate.replaceAll(RegExp(r'\D'), ''));
@@ -57,7 +111,6 @@ class NewPersonalController {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  // Resetea los campos
   void resetControllers() {
     dniController.clear();
     nombresController.clear();
