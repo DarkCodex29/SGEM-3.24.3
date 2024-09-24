@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:sgem/config/api/api.maestro.detail.dart';
 import 'package:sgem/config/api/api.personal.dart';
 
 class PersonalSearchController {
@@ -10,6 +11,7 @@ class PersonalSearchController {
   final TextEditingController apellidosController = TextEditingController();
 
   final PersonalService personalService = PersonalService();
+  final MaestroDetalleService maestroDetalleService = MaestroDetalleService();
 
   bool showNewPersonalForm = false;
   bool showEditPersonalForm = false;
@@ -17,6 +19,19 @@ class PersonalSearchController {
   bool isExpanded = true;
 
   List<Map<String, dynamic>> personalResults = [];
+  List<Map<String, dynamic>> guardiaOptions = [];
+  int? selectedGuardiaKey; 
+
+
+  Future<void> cargarGuardiaOptions() async {
+    try {
+      guardiaOptions = await maestroDetalleService.listarMaestroDetalle();
+      log('Guardia opciones: $guardiaOptions');
+    } catch (e) {
+      log('Error cargando la data de guardia maestro: $e');
+    }
+  }
+
 
   Future<void> searchPersonal() async {
     String? codigoMcp =
@@ -35,9 +50,11 @@ class PersonalSearchController {
         numeroDocumento: numeroDocumento,
         nombres: nombres,
         apellidos: apellidos,
-        inGuardia: null,
+        inGuardia:
+            selectedGuardiaKey,
         inEstado: null,
       );
+      toggleExpansion();
       log('Response: $personalResults');
       log('Resultados obtenidos: ${personalResults.length}');
     } catch (e) {
@@ -54,6 +71,7 @@ class PersonalSearchController {
     documentoIdentidadController.clear();
     nombresController.clear();
     apellidosController.clear();
+    selectedGuardiaKey = null;
   }
 
   void showNewPersonal() {

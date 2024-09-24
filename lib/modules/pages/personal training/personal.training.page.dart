@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:sgem/config/theme/app_theme.dart';
 import 'package:sgem/modules/pages/personal%20training/personal/new.personal.page.dart';
@@ -121,12 +123,14 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                           controller: controller.documentoIdentidadController,
                         ),
                         const SizedBox(height: 10),
+                        _buildDropdownGuardia(),
+                        /*
                         CustomDropdown(
                           hintText: "Guardia",
                           options: const ["A", "B", "C", "D", "Todos"],
                           isSearchable: false,
                           onChanged: (value) {},
-                        ),
+                        ),*/
                         const SizedBox(height: 10),
                         CustomTextField(
                           label: "Nombres personal",
@@ -163,12 +167,15 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: CustomDropdown(
+                          child: _buildDropdownGuardia(),
+                          /*
+                          CustomDropdown(
                             hintText: "Guardia",
                             options: const ["A", "B", "C", "D", "Todos"],
                             isSearchable: false,
                             onChanged: (value) {},
                           ),
+                        */
                         ),
                       ],
                     ),
@@ -251,7 +258,9 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                   ElevatedButton.icon(
                     onPressed: () async {
                       await controller.searchPersonal();
-                      setState(() {});
+                      setState(() {
+                        controller.isExpanded = false;
+                      });
                     },
                     icon: const Icon(
                       Icons.search,
@@ -278,6 +287,43 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildDropdownGuardia() {
+    return FutureBuilder(
+      future: controller.cargarGuardiaOptions(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox.shrink();
+        } else if (snapshot.hasError) {
+          return const Text('Error al cargar las opciones');
+        } else {
+          List<Map<String, dynamic>> options = controller.guardiaOptions;
+
+          return CustomDropdown(
+            hintText: 'Selecciona Guardia',
+            options:
+                options.map((option) => option['Valor'].toString()).toList(),
+            selectedValue: controller.selectedGuardiaKey != null
+                ? options.firstWhere((option) =>
+                    option['Key'] == controller.selectedGuardiaKey)['Valor']
+                : null,
+            isSearchable: false,
+            isRequired: false,
+            onChanged: (value) {
+              final selectedOption = options.firstWhere(
+                (option) => option['Valor'] == value,
+                orElse: () => {},
+              );
+              setState(() {
+                controller.selectedGuardiaKey = selectedOption['Key'];
+              });
+              log('Guardia seleccionada - Key: ${controller.selectedGuardiaKey}, Valor: $value');
+            },
+          );
+        }
+      },
     );
   }
 

@@ -8,7 +8,7 @@ class CustomDropdown extends StatefulWidget {
   final String? selectedValue;
   final Function(String?) onChanged;
   final bool isRequired;
-  final bool isReadOnly; // Agregado para controlar la interactividad
+  final bool isReadOnly;
 
   const CustomDropdown({
     required this.hintText,
@@ -26,13 +26,11 @@ class CustomDropdown extends StatefulWidget {
 }
 
 class CustomDropdownState extends State<CustomDropdown> {
-  String? selectedValue;
   List<String> filteredOptions = [];
 
   @override
   void initState() {
     super.initState();
-    selectedValue = widget.selectedValue;
     filteredOptions = widget.options;
   }
 
@@ -49,7 +47,7 @@ class CustomDropdownState extends State<CustomDropdown> {
                 SizedBox(
                   height: 50,
                   child: DropdownButtonFormField<String>(
-                    value: selectedValue,
+                    value: widget.selectedValue,
                     isExpanded: true,
                     hint: Text(
                       widget.hintText,
@@ -78,11 +76,8 @@ class CustomDropdownState extends State<CustomDropdown> {
                       ),
                     ),
                     onChanged: widget.isReadOnly
-                        ? null // Si es de solo lectura, deshabilitamos la interacción
+                        ? null
                         : (value) {
-                            setState(() {
-                              selectedValue = value;
-                            });
                             widget.onChanged(value);
                           },
                     items: filteredOptions.map((String option) {
@@ -92,8 +87,7 @@ class CustomDropdownState extends State<CustomDropdown> {
                       );
                     }).toList(),
                     disabledHint: Text(
-                      // Muestra el valor seleccionado pero deshabilitado
-                      selectedValue ?? widget.hintText,
+                      widget.selectedValue ?? widget.hintText,
                       style: const TextStyle(color: Colors.grey),
                     ),
                   ),
