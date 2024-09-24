@@ -38,7 +38,7 @@ class PersonalSearchController {
         inGuardia: null,
         inEstado: null,
       );
-
+      log('Response: $personalResults');
       log('Resultados obtenidos: ${personalResults.length}');
     } catch (e) {
       log('Error en la búsqueda: $e');

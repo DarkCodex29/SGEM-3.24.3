@@ -17,6 +17,34 @@ class PersonalSearchPage extends StatefulWidget {
 class _PersonalSearchPageState extends State<PersonalSearchPage> {
   final PersonalSearchController controller = PersonalSearchController();
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          controller.showNewPersonalForm
+              ? "Nuevo personal a Entrenar"
+              : controller.showEditPersonalForm
+                  ? "Editar personal"
+                  : controller.showTrainingForm
+                      ? "Entrenamientos"
+                      : "Búsqueda de entrenamiento de personal",
+          style: const TextStyle(
+            color: AppTheme.backgroundBlue,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: AppTheme.primaryBackground,
+      ),
+      body: controller.showNewPersonalForm || controller.showEditPersonalForm
+          ? _buildNewPersonalForm()
+          : controller.showTrainingForm
+              ? const TrainingPersonalPage()
+              : _buildSearchPage(),
+    );
+  }
+
   Widget _buildNewPersonalForm() {
     return NuevoPersonalPage(
       isEditing: controller.showEditPersonalForm,
@@ -51,34 +79,6 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
           ),
         );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          controller.showNewPersonalForm
-              ? "Nuevo personal a Entrenar"
-              : controller.showEditPersonalForm
-                  ? "Editar personal"
-                  : controller.showTrainingForm
-                      ? "Entrenamientos"
-                      : "Búsqueda de entrenamiento de personal",
-          style: const TextStyle(
-            color: AppTheme.backgroundBlue,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: AppTheme.primaryBackground,
-      ),
-      body: controller.showNewPersonalForm || controller.showEditPersonalForm
-          ? _buildNewPersonalForm()
-          : controller.showTrainingForm
-              ? const TrainingPersonalPage()
-              : _buildSearchPage(),
     );
   }
 
@@ -250,10 +250,7 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                   const SizedBox(width: 10),
                   ElevatedButton.icon(
                     onPressed: () async {
-                      // Realiza la búsqueda
                       await controller.searchPersonal();
-
-                      // Después de la búsqueda, redibuja la UI para mostrar los resultados
                       setState(() {});
                     },
                     icon: const Icon(
@@ -313,147 +310,7 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
             ],
           ),
           const SizedBox(height: 10),
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Colors.grey.shade300,
-                  width: 1,
-                ),
-              ),
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
-                  child: Container(
-                    height: 40,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFF1F4F8),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(8),
-                        topRight: Radius.circular(8),
-                      ),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              'Código MCP',
-                              style: TextStyle(
-                                fontFamily: 'Plus Jakarta Sans',
-                                color: Color(0xFF606A85),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              'Nombres personal',
-                              style: TextStyle(
-                                fontFamily: 'Plus Jakarta Sans',
-                                color: Color(0xFF606A85),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              'Documento de identidad',
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                fontFamily: 'Plus Jakarta Sans',
-                                color: Color(0xFF606A85),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(40, 0, 0, 0),
-                              child: Text(
-                                'Guardia',
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontFamily: 'Plus Jakarta Sans',
-                                  color: Color(0xFF606A85),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              'Estado de vigencia de personal',
-                              style: TextStyle(
-                                fontFamily: 'Univers',
-                                color: Color(0xFF606A85),
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Align(
-                              alignment: AlignmentDirectional.centerEnd,
-                              child: Text(
-                                'Acciones',
-                                textAlign: TextAlign.end,
-                                style: TextStyle(
-                                  fontFamily: 'Plus Jakarta Sans',
-                                  color: Color(0xFF606A85),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 1),
-                // Tabla de datos
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    headingRowHeight: 0,
-                    columns: const <DataColumn>[
-                      DataColumn(label: Text('')),
-                      DataColumn(label: Text('')),
-                      DataColumn(label: Text('')),
-                      DataColumn(label: Text('')),
-                      DataColumn(label: Text('')),
-                      DataColumn(label: Text('')),
-                    ],
-                    rows: <DataRow>[
-                      _buildDataRow(
-                          '2563', 'Randy Peterson', '47915139', 'A', 'Activo'),
-                      _buildDataRow('2563', 'Randy Peterson', '47915139', 'A',
-                          'Inactivo'),
-                      _buildDataRow(
-                          '2563', 'Randy Peterson', '47915139', 'A', 'Activo'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _buildResultsTable(),
         ],
       ),
     );
@@ -528,49 +385,43 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
     ];
   }
 
-  DataRow _buildDataRow(String codigo, String nombre, String documento,
-      String guardia, String estado) {
-    return DataRow(
-      cells: <DataCell>[
-        DataCell(Text(codigo)),
-        DataCell(Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(nombre),
-            const Text(
-              'Conductor Máquina Pesada',
-              style: TextStyle(color: Colors.blue),
-            ),
-          ],
-        )),
-        DataCell(Text(documento)),
-        DataCell(Text(guardia)),
-        DataCell(Row(
-          children: [
-            Icon(
-              Icons.circle,
-              color: estado == 'Activo' ? Colors.green : Colors.grey,
-              size: 12,
-            ),
-            const SizedBox(width: 5),
-            Text(estado),
-          ],
-        )),
-        DataCell(Expanded(
-          flex: 3,
-          child: Align(
-            alignment: const AlignmentDirectional(-1, 0),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                // Botón Editar
-                Align(
-                  alignment: const AlignmentDirectional(-1, 0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(2),
-                    child: IconButton(
+  Widget _buildResultsTable() {
+    return controller.personalResults.isEmpty
+        ? const Center(child: Text("No se encontraron resultados"))
+        : DataTable(
+            headingRowHeight: 40,
+            columns: const [
+              DataColumn(label: Text('Código MCP')),
+              DataColumn(label: Text('Nombre completo')),
+              DataColumn(label: Text('Documento de identidad')),
+              DataColumn(label: Text('Guardia')),
+              DataColumn(label: Text('Estado')),
+              DataColumn(label: Text('Acciones')),
+            ],
+            rows: controller.personalResults.map((personal) {
+              return DataRow(cells: [
+                DataCell(Text(personal['CodigoMcp'] ?? '')),
+                DataCell(Text(personal['NombreCompleto'] ?? '')),
+                DataCell(Text(personal['NumeroDocumento'] ?? '')),
+                DataCell(Text(personal['Guardia'] != null
+                    ? personal['Guardia']['Nombre']
+                    : '')),
+                DataCell(Row(
+                  children: [
+                    Icon(
+                      Icons.circle,
+                      color: personal['Estado']['Nombre'] == 'Activo'
+                          ? Colors.green
+                          : Colors.grey,
+                      size: 12,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(personal['Estado']['Nombre'] ?? ''),
+                  ],
+                )),
+                DataCell(Row(
+                  children: [
+                    IconButton(
                       icon: const Icon(
                         Icons.edit,
                         color: AppTheme.primaryColor,
@@ -582,21 +433,13 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                         });
                       },
                     ),
-                  ),
-                ),
-                // Botón Eliminar
-                Align(
-                  alignment: const AlignmentDirectional(-1, 0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(2),
-                    child: IconButton(
+                    IconButton(
                       icon: const Icon(
                         Icons.delete,
                         color: AppTheme.errorColor,
                         size: 18,
                       ),
                       onPressed: () async {
-                        // Mostrar el modal para eliminar el personal
                         await showModalBottomSheet(
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
@@ -614,14 +457,7 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                         );
                       },
                     ),
-                  ),
-                ),
-                // Botón Entrenamientos
-                Align(
-                  alignment: const AlignmentDirectional(-1, 0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(2),
-                    child: IconButton(
+                    IconButton(
                       icon: const Icon(
                         Icons.model_training_sharp,
                         color: AppTheme.warningColor,
@@ -633,31 +469,30 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
                         });
                       },
                     ),
-                  ),
-                ),
-                // Botón VCanet (Ver carnet)
-                Align(
-                  alignment: const AlignmentDirectional(-1, 0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(2),
-                    child: IconButton(
+                    IconButton(
                       icon: const Icon(
                         Icons.credit_card_rounded,
                         color: AppTheme.greenColor,
                         size: 18,
                       ),
                       onPressed: () {
-                        // Navegar a la página de VCanet
-                        Navigator.of(context).pushNamed('VCanet');
+                        //TODO
                       },
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        )),
-      ],
-    );
+                    IconButton(
+                      icon: const Icon(
+                        Icons.remove_red_eye,
+                        color: AppTheme.primaryColor,
+                        size: 18,
+                      ),
+                      onPressed: () {
+                        //TODO
+                      },
+                    ),
+                  ],
+                )),
+              ]);
+            }).toList(),
+          );
   }
 }
