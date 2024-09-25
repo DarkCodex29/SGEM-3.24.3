@@ -1,4 +1,7 @@
 import 'dart:developer';
+import 'dart:typed_data';
+import 'package:excel/excel.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:sgem/config/api/api.maestro.detail.dart';
@@ -24,6 +27,8 @@ class PersonalSearchController extends GetxController {
   var selectedPersonal = Rxn<Personal>();
   var guardiaOptions = <Map<String, dynamic>>[].obs;
   var selectedGuardiaKey = RxnInt();
+
+  var rowsPerPage = 0.obs;
 
   @override
   void onInit() {
@@ -74,7 +79,94 @@ class PersonalSearchController extends GetxController {
   }
 
   Future<void> downloadExcel() async {
-    // Lógica para descargar el Excel
+    var excel = Excel.createExcel();
+    excel.rename('Sheet1', 'Personal');
+
+    CellStyle headerStyle = CellStyle(
+      backgroundColorHex: ExcelColor.blue,
+      fontColorHex: ExcelColor.white,
+      bold: true,
+      horizontalAlign: HorizontalAlign.Center,
+      verticalAlign: VerticalAlign.Center,
+    );
+    List<String> headers = [
+      'DNI',
+      'CÓDIGO',
+      'APELLIDO PATERNO',
+      'APELLIDO MATERNO',
+      'NOMBRES',
+      'GUARDIA',
+      'PUESTO TRABAJO',
+      'GERENCIA',
+      'ÁREA',
+      'FECHA INGRESO',
+      'FECHA INGRESO MINA',
+      'CÓDIGO LICENCIA',
+      'CATEGORÍA LICENCIA',
+      'FECHA REVALIDACIÓN',
+      'RESTRICCIONES'
+    ];
+    for (int i = 0; i < headers.length; i++) {
+      var cell = excel.sheets['Personal']!
+          .cell(CellIndex.indexByColumnRow(columnIndex: i, rowIndex: 0));
+      cell.value = TextCellValue(headers[i]);
+      cell.cellStyle = headerStyle;
+    }
+
+    for (int rowIndex = 0; rowIndex < personalResults.length; rowIndex++) {
+      var personal = personalResults[rowIndex];
+      List<CellValue> row = [
+        TextCellValue(personal.numeroDocumento),
+        TextCellValue(personal.codigoMcp),
+        TextCellValue(personal.apellidoPaterno),
+        TextCellValue(personal.apellidoMaterno),
+        TextCellValue('${personal.primerNombre} ${personal.segundoNombre}'),
+        TextCellValue(personal.guardia.nombre),
+        TextCellValue(personal.cargo),
+        TextCellValue(personal.gerencia),
+        TextCellValue(personal.area),
+        personal.fechaIngreso != null
+            ? DateCellValue.fromDateTime(personal.fechaIngreso!)
+            : TextCellValue(''),
+        personal.fechaIngresoMina != null
+            ? DateCellValue.fromDateTime(personal.fechaIngresoMina!)
+            : TextCellValue(''),
+        TextCellValue(personal.licenciaConducir),
+        TextCellValue(personal.licenciaCategoria),
+        personal.licenciaVencimiento != null
+            ? DateCellValue.fromDateTime(personal.licenciaVencimiento!)
+            : TextCellValue(''),
+        TextCellValue(personal.restricciones),
+      ];
+
+      for (int colIndex = 0; colIndex < row.length; colIndex++) {
+        var cell = excel.sheets['Personal']!.cell(CellIndex.indexByColumnRow(
+            columnIndex: colIndex, rowIndex: rowIndex + 1));
+        cell.value = row[colIndex];
+      }
+    }
+
+    var excelBytes = excel.encode();
+    Uint8List uint8ListBytes = Uint8List.fromList(excelBytes!);
+
+    String fileName = generateExcelFileName();
+    await FileSaver.instance.saveFile(
+        name: fileName,
+        bytes: uint8ListBytes,
+        ext: "xlsx",
+        mimeType: MimeType.microsoftExcel);
+  }
+
+  String generateExcelFileName() {
+    final now = DateTime.now();
+    final day = now.day.toString().padLeft(2, '0');
+    final month = now.month.toString().padLeft(2, '0');
+    final year = now.year.toString().substring(2);
+    final hour = now.hour.toString().padLeft(2, '0');
+    final minute = now.minute.toString().padLeft(2, '0');
+    final second = now.second.toString().padLeft(2, '0');
+
+    return 'PERSONAL_MINA_$day$month$year$hour$minute$second.xlsx';
   }
 
   void clearFields() {

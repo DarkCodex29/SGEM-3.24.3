@@ -360,6 +360,33 @@ class PersonalSearchPage extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           _buildResultsTable(controller),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Spacer(),
+              Obx(
+                () => Row(
+                  children: [
+                    const Text("Items por página: "),
+                    DropdownButton<int>(
+                      value: controller.rowsPerPage.value,
+                      items: [0, 1, 20, 50]
+                          .map((value) => DropdownMenuItem<int>(
+                                value: value,
+                                child: Text(value.toString()),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          controller.rowsPerPage.value = value;
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -437,6 +464,10 @@ class PersonalSearchPage extends StatelessWidget {
       if (controller.personalResults.isEmpty) {
         return const Center(child: Text("No se encontraron resultados"));
       }
+      var rowsToShow = controller.personalResults
+          .take(controller.rowsPerPage.value)
+          .toList();
+
       return DataTable(
         headingRowHeight: 40,
         columns: const [
@@ -447,7 +478,8 @@ class PersonalSearchPage extends StatelessWidget {
           DataColumn(label: Text('Estado')),
           DataColumn(label: Text('Acciones')),
         ],
-        rows: controller.personalResults.map((personal) {
+        //TODO: controller.personalResults
+        rows: rowsToShow.map((personal) {
           String estado = personal.estado.nombre == 'Cesado'
               ? 'Inactivo'
               : personal.estado.nombre;
