@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:sgem/config/api/api.maestro.detail.dart';
 import 'package:sgem/config/api/api.personal.dart';
@@ -20,8 +21,7 @@ class PersonalSearchController {
 
   List<Map<String, dynamic>> personalResults = [];
   List<Map<String, dynamic>> guardiaOptions = [];
-  int? selectedGuardiaKey; 
-
+  int? selectedGuardiaKey;
 
   Future<void> cargarGuardiaOptions() async {
     try {
@@ -31,7 +31,6 @@ class PersonalSearchController {
       log('Error cargando la data de guardia maestro: $e');
     }
   }
-
 
   Future<void> searchPersonal() async {
     String? codigoMcp =
@@ -50,8 +49,7 @@ class PersonalSearchController {
         numeroDocumento: numeroDocumento,
         nombres: nombres,
         apellidos: apellidos,
-        inGuardia:
-            selectedGuardiaKey,
+        inGuardia: selectedGuardiaKey,
         inEstado: null,
       );
       toggleExpansion();
@@ -60,6 +58,10 @@ class PersonalSearchController {
     } catch (e) {
       log('Error en la búsqueda: $e');
     }
+  }
+
+  Future<void> downloadExcel() async {
+    var excel = Excel.createExcel();
   }
 
   void toggleExpansion() {

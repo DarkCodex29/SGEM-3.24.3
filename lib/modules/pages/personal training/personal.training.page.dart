@@ -388,8 +388,8 @@ class _PersonalSearchPageState extends State<PersonalSearchPage> {
       ),
       const SizedBox(width: 10),
       ElevatedButton.icon(
-        onPressed: () {
-          // Acción para descargar Excel
+        onPressed: () async {
+          await controller.downloadExcel();
         },
         icon:
             const Icon(Icons.download, size: 18, color: AppTheme.primaryColor),
