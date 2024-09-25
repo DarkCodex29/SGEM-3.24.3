@@ -9,22 +9,38 @@ class NuevoPersonalPage extends StatelessWidget {
   final NewPersonalController controller = NewPersonalController();
   final bool isEditing;
   final bool isViewing;
-  final TextEditingController dniController;
-  final TextEditingController nombresController;
-  final TextEditingController apellidosController;
-  final TextEditingController codigoMCPController;
+  final Personal personal;
   final VoidCallback onCancel;
 
   NuevoPersonalPage({
     required this.isEditing,
     required this.isViewing,
-    required this.dniController,
-    required this.nombresController,
-    required this.apellidosController,
-    required this.codigoMCPController,
+    required this.personal,
     required this.onCancel,
     super.key,
-  });
+  }) {
+    if (isEditing || isViewing) {
+      controller.dniController.text = personal.numeroDocumento;
+      //TODO: Cambiar por el nombre completo
+      //controller.nombresController.text =
+      //'${personal.primerNombre} ${personal.segundoNombre}';
+      controller.nombresController.text = personal.nombreCompleto;
+      controller.puestoTrabajoController.text = personal.cargo;
+      controller.codigoController.text = personal.codigoMcp;
+      controller.apellidoPaternoController.text = personal.apellidoPaterno;
+      controller.apellidoMaternoController.text = personal.apellidoMaterno;
+      controller.gerenciaController.text = personal.gerencia;
+      controller.fechaIngresoController.text =
+          personal.fechaIngreso?.toString() ?? '';
+      controller.areaController.text = personal.area;
+      controller.codigoLicenciaController.text = personal.licenciaCategoria;
+      controller.restriccionesController.text = personal.restricciones;
+      controller.fechaIngresoMinaController.text =
+          personal.fechaIngresoMina?.toString() ?? '';
+      controller.fechaRevalidacionController.text =
+          personal.licenciaVencimiento?.toString() ?? '';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +62,6 @@ class NuevoPersonalPage extends StatelessWidget {
     );
   }
 
-  // Encabezado con los datos principales
   Widget _buildHeaderSection() {
     return Container(
       padding: const EdgeInsets.all(20.0),
@@ -82,7 +97,6 @@ class NuevoPersonalPage extends StatelessWidget {
     );
   }
 
-  // Campos de texto para los datos personales
   Widget _buildPersonalDataFields() {
     return Column(
       children: [
@@ -94,7 +108,7 @@ class NuevoPersonalPage extends StatelessWidget {
                 children: [
                   CustomTextField(
                     label: "DNI",
-                    controller: dniController,
+                    controller: controller.dniController,
                     icon: _getSearchIcon(),
                     isReadOnly: isEditing || isViewing,
                     onIconPressed: _searchPersonalByDNI,
@@ -102,7 +116,7 @@ class NuevoPersonalPage extends StatelessWidget {
                   const SizedBox(height: 15),
                   CustomTextField(
                     label: "Nombres",
-                    controller: nombresController,
+                    controller: controller.nombresController,
                     isReadOnly: true,
                   ),
                   const SizedBox(height: 15),
@@ -124,14 +138,13 @@ class NuevoPersonalPage extends StatelessWidget {
     );
   }
 
-  // Segunda columna con más campos
   Widget _buildSecondColumn() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CustomTextField(
           label: "Código",
-          controller: codigoMCPController,
+          controller: controller.codigoController,
           isReadOnly: true,
         ),
         const SizedBox(height: 15),
@@ -150,7 +163,6 @@ class NuevoPersonalPage extends StatelessWidget {
     );
   }
 
-  // Tercera columna con más campos
   Widget _buildThirdColumn() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,9 +187,6 @@ class NuevoPersonalPage extends StatelessWidget {
       ],
     );
   }
-
-// Sección de datos adicionales con los campos restaurados
-// Sección de datos adicionales ajustada para restaurar el diseño
 
   Widget _buildDatosAdicionalesSection() {
     return Container(
@@ -377,18 +386,7 @@ class NuevoPersonalPage extends StatelessWidget {
   // Acción para buscar personal por DNI
   void _searchPersonalByDNI() async {
     if (!isEditing && !isViewing) {
-      await controller.buscarPersonalPorDni(dniController.text);
-      if (controller.personalData != null) {
-        _llenarCamposConData(controller.personalData!); // Use personalData
-      }
+      await controller.buscarPersonalPorDni(controller.dniController.text);
     }
-  }
-
-  // Método para llenar los campos con la data obtenida del servicio
-  void _llenarCamposConData(Personal personal) {
-    nombresController.text =
-        "${personal.primerNombre} ${personal.segundoNombre}";
-    apellidosController.text =
-        "${personal.apellidoPaterno} ${personal.apellidoMaterno}";
   }
 }

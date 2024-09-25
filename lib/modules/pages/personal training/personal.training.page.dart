@@ -5,6 +5,7 @@ import 'package:sgem/config/theme/app_theme.dart';
 import 'package:sgem/modules/pages/personal%20training/personal/new.personal.page.dart';
 import 'package:sgem/modules/pages/personal%20training/personal.training.controller.dart';
 import 'package:sgem/modules/pages/personal%20training/training/training.personal.page.dart';
+import 'package:sgem/shared/modules/personal.dart';
 import 'package:sgem/shared/widgets/custom.dropdown.dart';
 import 'package:sgem/shared/widgets/custom.textfield.dart';
 import 'package:sgem/shared/widgets/widget.delete.motivo.dart';
@@ -25,9 +26,11 @@ class PersonalSearchPage extends StatelessWidget {
                 ? "Nuevo personal a Entrenar"
                 : controller.showEditPersonalForm.value
                     ? "Editar personal"
-                    : controller.showTrainingForm.value
-                        ? "Entrenamientos"
-                        : "Búsqueda de entrenamiento de personal",
+                    : controller.showViewPersonalForm.value
+                        ? "Vizualizar"
+                        : controller.showTrainingForm.value
+                            ? "Entrenamientos"
+                            : "Búsqueda de entrenamiento de personal",
             style: const TextStyle(
               color: AppTheme.backgroundBlue,
               fontSize: 24,
@@ -39,7 +42,8 @@ class PersonalSearchPage extends StatelessWidget {
       ),
       body: Obx(() {
         return controller.showNewPersonalForm.value ||
-                controller.showEditPersonalForm.value
+                controller.showEditPersonalForm.value ||
+                controller.showViewPersonalForm.value
             ? _buildNewPersonalForm(controller)
             : controller.showTrainingForm.value
                 ? const TrainingPersonalPage()
@@ -51,15 +55,37 @@ class PersonalSearchPage extends StatelessWidget {
   Widget _buildNewPersonalForm(PersonalSearchController controller) {
     return NuevoPersonalPage(
       isEditing: controller.showEditPersonalForm.value,
-      isViewing: controller.showTrainingForm.value,
-      dniController: controller.documentoIdentidadController,
-      nombresController: controller.nombresController,
-      apellidosController: controller.apellidosController,
-      codigoMCPController: controller.codigoMCPController,
+      isViewing: controller.showViewPersonalForm.value,
+      personal: controller.selectedPersonal.value ??
+          Personal(
+            key: 0,
+            tipoPersona: '',
+            inPersonalOrigen: 0,
+            licenciaConducir: '',
+            operacionMina: '',
+            zonaPlataforma: '',
+            restricciones: '',
+            usuarioRegistro: '',
+            usuarioModifica: '',
+            codigoMcp: '',
+            nombreCompleto: '',
+            cargo: '',
+            numeroDocumento: '',
+            guardia: Guardia(key: 0, nombre: ''),
+            estado: Estado(key: 0, nombre: ''),
+            eliminado: '',
+            motivoElimina: '',
+            usuarioElimina: '',
+            apellidoPaterno: '',
+            apellidoMaterno: '',
+            primerNombre: '',
+            segundoNombre: '',
+            licenciaCategoria: '',
+            gerencia: '',
+            area: '',
+          ),
       onCancel: () {
-        controller.showNewPersonalForm.value = false;
-        controller.showEditPersonalForm.value = false;
-        controller.showTrainingForm.value = false;
+        controller.hideForms();
       },
     );
   }
@@ -442,11 +468,12 @@ class PersonalSearchPage extends StatelessWidget {
               ],
             )),
             DataCell(Row(
+              //TODO: CAMBIA
               children: estado == 'Inactivos'
                   ? [
                       _buildIconButton(
                           Icons.remove_red_eye, AppTheme.primaryColor, () {
-                        // Acción de visualizar
+                        controller.showViewPersonal(personal);
                       }),
                       _buildIconButton(
                           Icons.model_training_sharp, AppTheme.warningColor,

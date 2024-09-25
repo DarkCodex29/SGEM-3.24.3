@@ -34,13 +34,13 @@ class NewPersonalController {
       final personalJson = await personalService.buscarPersonalPorDni(dni);
       personalData = Personal.fromJson(personalJson);
 
-      _llenarControladores(personalData!);
+      llenarControladores(personalData!);
     } catch (e) {
       log('Error al buscar el personal: $e');
     }
   }
 
-  void _llenarControladores(Personal personal) {
+  void llenarControladores(Personal personal) {
     dniController.text = personal.numeroDocumento;
     nombresController.text =
         '${personal.primerNombre} ${personal.segundoNombre}';
@@ -49,15 +49,20 @@ class NewPersonalController {
     apellidoPaternoController.text = personal.apellidoPaterno;
     apellidoMaternoController.text = personal.apellidoMaterno;
     gerenciaController.text = personal.gerencia;
-    fechaIngresoController.text = _formatDate(personal.fechaIngreso!);
+    fechaIngresoController.text = personal.fechaIngreso != null
+        ? _formatDate(personal.fechaIngreso!)
+        : '';
     areaController.text = personal.area;
     codigoLicenciaController.text = personal.licenciaCategoria;
     restriccionesController.text = personal.restricciones;
     operacionMinaController.text = personal.operacionMina;
     zonaPlataformaController.text = personal.zonaPlataforma;
-    fechaIngresoMinaController.text = _formatDate(personal.fechaIngresoMina!);
-    fechaRevalidacionController.text =
-        _formatDate(personal.licenciaVencimiento!);
+    fechaIngresoMinaController.text = personal.fechaIngresoMina != null
+        ? _formatDate(personal.fechaIngresoMina!)
+        : '';
+    fechaRevalidacionController.text = personal.licenciaVencimiento != null
+        ? _formatDate(personal.licenciaVencimiento!)
+        : '';
   }
 
   Future<void> registrarPersona() async {

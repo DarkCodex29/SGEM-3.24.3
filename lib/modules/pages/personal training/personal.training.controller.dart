@@ -17,9 +17,11 @@ class PersonalSearchController extends GetxController {
   var showNewPersonalForm = false.obs;
   var showEditPersonalForm = false.obs;
   var showTrainingForm = false.obs;
+  var showViewPersonalForm = false.obs;
   var isExpanded = true.obs;
 
   var personalResults = <Personal>[].obs;
+  var selectedPersonal = Rxn<Personal>();
   var guardiaOptions = <Map<String, dynamic>>[].obs;
   var selectedGuardiaKey = RxnInt();
 
@@ -84,29 +86,72 @@ class PersonalSearchController extends GetxController {
   }
 
   void showNewPersonal() {
+    selectedPersonal.value = Personal(
+      key: 0,
+      tipoPersona: "",
+      inPersonalOrigen: 0,
+      licenciaConducir: "",
+      operacionMina: "",
+      zonaPlataforma: "",
+      restricciones: "",
+      usuarioRegistro: "",
+      usuarioModifica: "",
+      codigoMcp: "",
+      nombreCompleto: "",
+      cargo: "",
+      numeroDocumento: "",
+      guardia: Guardia(key: 0, nombre: ""),
+      estado: Estado(key: 0, nombre: ""),
+      eliminado: "",
+      motivoElimina: "",
+      usuarioElimina: "",
+      apellidoPaterno: "",
+      apellidoMaterno: "",
+      primerNombre: "",
+      segundoNombre: "",
+      fechaIngreso: null,
+      licenciaCategoria: "",
+      licenciaVencimiento: null,
+      gerencia: "",
+      area: "",
+    );
+
     showNewPersonalForm.value = true;
     showEditPersonalForm.value = false;
+    showViewPersonalForm.value = false;
   }
 
   void showEditPersonal(Personal personal) {
-    codigoMCPController.text = personal.codigoMcp;
-    documentoIdentidadController.text = personal.numeroDocumento;
-    nombresController.text =
-        '${personal.primerNombre} ${personal.segundoNombre}';
-    apellidosController.text =
-        '${personal.apellidoPaterno} ${personal.apellidoMaterno}';
+    selectedPersonal.value = personal;
 
     showNewPersonalForm.value = false;
     showEditPersonalForm.value = true;
+    showViewPersonalForm.value = false;
+  }
+
+  void showViewPersonal(Personal personal) {
+    selectedPersonal.value = personal;
+
+    showNewPersonalForm.value = false;
+    showEditPersonalForm.value = false;
+    showViewPersonalForm.value = true;
+  }
+
+  void hideForms() {
+    showNewPersonalForm.value = false;
+    showEditPersonalForm.value = false;
+    showViewPersonalForm.value = false;
+    showTrainingForm.value = false;
+  }
+
+  void toggleExpansion() {
+    isExpanded.value = !isExpanded.value;
   }
 
   void showTraining() {
     showNewPersonalForm.value = false;
     showEditPersonalForm.value = false;
+    showViewPersonalForm.value = false;
     showTrainingForm.value = true;
-  }
-
-  void toggleExpansion() {
-    isExpanded.value = !isExpanded.value;
   }
 }

@@ -59,7 +59,6 @@ class Personal {
     required this.area,
   });
 
-  // Método de fábrica para crear un objeto desde un JSON, con checks de null
   factory Personal.fromJson(Map<String, dynamic> json) {
     return Personal(
       key: json['Key'] ?? 0,
@@ -103,7 +102,6 @@ class Personal {
     );
   }
 
-  // Método para convertir el objeto a JSON
   Map<String, dynamic> toJson() {
     return {
       'Key': key,
