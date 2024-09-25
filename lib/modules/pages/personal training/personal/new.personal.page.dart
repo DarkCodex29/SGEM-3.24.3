@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sgem/config/theme/app_theme.dart';
+import 'package:sgem/shared/modules/personal.dart';
 import 'package:sgem/shared/widgets/custom.dropdown.dart';
 import 'package:sgem/shared/widgets/custom.textfield.dart';
 import 'new.personal.controller.dart';
@@ -7,6 +8,7 @@ import 'new.personal.controller.dart';
 class NuevoPersonalPage extends StatelessWidget {
   final NewPersonalController controller = NewPersonalController();
   final bool isEditing;
+  final bool isViewing;
   final TextEditingController dniController;
   final TextEditingController nombresController;
   final TextEditingController apellidosController;
@@ -15,6 +17,7 @@ class NuevoPersonalPage extends StatelessWidget {
 
   NuevoPersonalPage({
     required this.isEditing,
+    required this.isViewing,
     required this.dniController,
     required this.nombresController,
     required this.apellidosController,
@@ -35,13 +38,15 @@ class NuevoPersonalPage extends StatelessWidget {
             const SizedBox(height: 30),
             _buildDatosAdicionalesSection(),
             const SizedBox(height: 30),
-            _buildButtons(context),
+            if (isViewing) _buildRegresarButton(context),
+            if (!isViewing) _buildButtons(context),
           ],
         ),
       ),
     );
   }
 
+  // Encabezado con los datos principales
   Widget _buildHeaderSection() {
     return Container(
       padding: const EdgeInsets.all(20.0),
@@ -71,101 +76,108 @@ class NuevoPersonalPage extends StatelessWidget {
             ],
           ),
           const SizedBox(width: 30),
-          Expanded(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomTextField(
-                            label: "DNI",
-                            controller: controller.dniController,
-                            icon: isEditing ? null : Icons.search,
-                            isReadOnly: isEditing,
-                            onIconPressed: () async {
-                              if (!isEditing) {
-                                await controller.buscarPersonalPorDni(
-                                    controller.dniController.text);
-                              }
-                            },
-                          ),
-                          const SizedBox(height: 15),
-                          CustomTextField(
-                            label: "Nombres",
-                            controller: controller.nombresController,
-                            isReadOnly: true,
-                          ),
-                          const SizedBox(height: 15),
-                          CustomTextField(
-                            label: "Puesto de Trabajo",
-                            controller: controller.puestoTrabajoController,
-                            isReadOnly: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomTextField(
-                            label: "Código",
-                            controller: controller.codigoController,
-                            isReadOnly: true,
-                          ),
-                          const SizedBox(height: 15),
-                          CustomTextField(
-                            label: "Apellido Paterno",
-                            controller: controller.apellidoPaternoController,
-                            isReadOnly: true,
-                          ),
-                          const SizedBox(height: 15),
-                          CustomTextField(
-                            label: "Gerencia",
-                            controller: controller.gerenciaController,
-                            isReadOnly: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomTextField(
-                            label: "Fecha Ingreso",
-                            controller: controller.fechaIngresoController,
-                            isReadOnly: true,
-                          ),
-                          const SizedBox(height: 15),
-                          CustomTextField(
-                            label: "Apellido Materno",
-                            controller: controller.apellidoMaternoController,
-                            isReadOnly: true,
-                          ),
-                          const SizedBox(height: 15),
-                          CustomTextField(
-                            label: "Área",
-                            controller: controller.areaController,
-                            isReadOnly: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          Expanded(child: _buildPersonalDataFields())
         ],
       ),
     );
   }
+
+  // Campos de texto para los datos personales
+  Widget _buildPersonalDataFields() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomTextField(
+                    label: "DNI",
+                    controller: dniController,
+                    icon: _getSearchIcon(),
+                    isReadOnly: isEditing || isViewing,
+                    onIconPressed: _searchPersonalByDNI,
+                  ),
+                  const SizedBox(height: 15),
+                  CustomTextField(
+                    label: "Nombres",
+                    controller: nombresController,
+                    isReadOnly: true,
+                  ),
+                  const SizedBox(height: 15),
+                  CustomTextField(
+                    label: "Puesto de Trabajo",
+                    controller: controller.puestoTrabajoController,
+                    isReadOnly: true,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 20),
+            Expanded(child: _buildSecondColumn()),
+            const SizedBox(width: 20),
+            Expanded(child: _buildThirdColumn()),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // Segunda columna con más campos
+  Widget _buildSecondColumn() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomTextField(
+          label: "Código",
+          controller: codigoMCPController,
+          isReadOnly: true,
+        ),
+        const SizedBox(height: 15),
+        CustomTextField(
+          label: "Apellido Paterno",
+          controller: controller.apellidoPaternoController,
+          isReadOnly: isViewing,
+        ),
+        const SizedBox(height: 15),
+        CustomTextField(
+          label: "Gerencia",
+          controller: controller.gerenciaController,
+          isReadOnly: true,
+        ),
+      ],
+    );
+  }
+
+  // Tercera columna con más campos
+  Widget _buildThirdColumn() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomTextField(
+          label: "Fecha Ingreso",
+          controller: controller.fechaIngresoController,
+          isReadOnly: true,
+        ),
+        const SizedBox(height: 15),
+        CustomTextField(
+          label: "Apellido Materno",
+          controller: controller.apellidoMaternoController,
+          isReadOnly: isViewing,
+        ),
+        const SizedBox(height: 15),
+        CustomTextField(
+          label: "Área",
+          controller: controller.areaController,
+          isReadOnly: true,
+        ),
+      ],
+    );
+  }
+
+// Sección de datos adicionales con los campos restaurados
+// Sección de datos adicionales ajustada para restaurar el diseño
 
   Widget _buildDatosAdicionalesSection() {
     return Container(
@@ -190,33 +202,36 @@ class NuevoPersonalPage extends StatelessWidget {
                   hintText: "Categoría Licencia",
                   options: const ["A", "B", "C", "D"],
                   isSearchable: false,
-                  onChanged: (value) {},
+                  onChanged: isViewing ? (_) {} : (value) {},
                   isRequired: true,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: CustomTextField(
-                  label: "Código de licencia",
+                  label: "Código Licencia",
                   controller: controller.codigoLicenciaController,
+                  isReadOnly: isViewing,
                   isRequired: true,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: CustomTextField(
-                  label: "Fecha ingreso a mina",
-                  controller: TextEditingController(),
+                  label: "Fecha Ingreso a Mina",
+                  controller: controller.fechaIngresoMinaController,
                   icon: Icons.calendar_today,
+                  isReadOnly: isViewing,
                   isRequired: true,
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: CustomTextField(
-                  label: "Fecha de revalidación",
-                  controller: TextEditingController(),
+                  label: "Fecha de Revalidación",
+                  controller: controller.fechaRevalidacionController,
                   icon: Icons.calendar_today,
+                  isReadOnly: isViewing,
                   isRequired: true,
                 ),
               ),
@@ -230,7 +245,7 @@ class NuevoPersonalPage extends StatelessWidget {
                   hintText: "Guardia",
                   options: const ["Mañana", "Tarde", "Noche"],
                   isSearchable: false,
-                  onChanged: (value) {},
+                  onChanged: isViewing ? (_) {} : (value) {},
                   isRequired: true,
                 ),
               ),
@@ -238,19 +253,25 @@ class NuevoPersonalPage extends StatelessWidget {
               const Expanded(
                 child: Text("Autorizado para operar en:"),
               ),
-              const Expanded(
+              Expanded(
                 child: Row(
                   children: [
-                    Checkbox(value: true, onChanged: null),
-                    Text("Operaciones mina"),
+                    Checkbox(
+                      value: true, // Control para el valor
+                      onChanged: isViewing ? null : (value) {},
+                    ),
+                    const Text("Operaciones mina"),
                   ],
                 ),
               ),
-              const Expanded(
+              Expanded(
                 child: Row(
                   children: [
-                    Checkbox(value: true, onChanged: null),
-                    Text("Zonas o plataforma"),
+                    Checkbox(
+                      value: true, // Control para el valor
+                      onChanged: isViewing ? null : (value) {},
+                    ),
+                    const Text("Zonas o plataforma"),
                   ],
                 ),
               ),
@@ -261,6 +282,7 @@ class NuevoPersonalPage extends StatelessWidget {
           CustomTextField(
             label: "",
             controller: controller.restriccionesController,
+            isReadOnly: isViewing,
           ),
           const SizedBox(height: 20),
           _buildArchivoSection(),
@@ -289,9 +311,11 @@ class NuevoPersonalPage extends StatelessWidget {
         Row(
           children: [
             TextButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                // Acción para eliminar el archivo
+              },
               icon: const Icon(Icons.close, color: Colors.red),
-              label: const Text("Ficha-modulo.jpg",
+              label: const Text("Documento.pdf",
                   style: TextStyle(color: Colors.red)),
             ),
           ],
@@ -300,6 +324,21 @@ class NuevoPersonalPage extends StatelessWidget {
     );
   }
 
+  // Botón para regresar cuando se está visualizando
+  Widget _buildRegresarButton(BuildContext context) {
+    return Center(
+      child: ElevatedButton(
+        onPressed: onCancel,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppTheme.primaryColor,
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+        ),
+        child: const Text("Regresar", style: TextStyle(color: Colors.white)),
+      ),
+    );
+  }
+
+  // Botones para editar o cancelar
   Widget _buildButtons(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -315,7 +354,7 @@ class NuevoPersonalPage extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () {
-            // Acción de guardar, según sea edición o nuevo
+            // Acción de guardar
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.primaryColor,
@@ -325,5 +364,31 @@ class NuevoPersonalPage extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  // Ícono de búsqueda
+  IconData? _getSearchIcon() {
+    if (!isEditing && !isViewing) {
+      return Icons.search;
+    }
+    return null;
+  }
+
+  // Acción para buscar personal por DNI
+  void _searchPersonalByDNI() async {
+    if (!isEditing && !isViewing) {
+      await controller.buscarPersonalPorDni(dniController.text);
+      if (controller.personalData != null) {
+        _llenarCamposConData(controller.personalData!); // Use personalData
+      }
+    }
+  }
+
+  // Método para llenar los campos con la data obtenida del servicio
+  void _llenarCamposConData(Personal personal) {
+    nombresController.text =
+        "${personal.primerNombre} ${personal.segundoNombre}";
+    apellidosController.text =
+        "${personal.apellidoPaterno} ${personal.apellidoMaterno}";
   }
 }

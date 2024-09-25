@@ -1,31 +1,38 @@
 import 'dart:developer';
-import 'package:excel/excel.dart';
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:sgem/config/api/api.maestro.detail.dart';
 import 'package:sgem/config/api/api.personal.dart';
+import 'package:sgem/shared/modules/personal.dart';
 
-class PersonalSearchController {
-  final TextEditingController codigoMCPController = TextEditingController();
-  final TextEditingController documentoIdentidadController =
-      TextEditingController();
-  final TextEditingController nombresController = TextEditingController();
-  final TextEditingController apellidosController = TextEditingController();
+class PersonalSearchController extends GetxController {
+  final codigoMCPController = TextEditingController();
+  final documentoIdentidadController = TextEditingController();
+  final nombresController = TextEditingController();
+  final apellidosController = TextEditingController();
 
-  final PersonalService personalService = PersonalService();
-  final MaestroDetalleService maestroDetalleService = MaestroDetalleService();
+  final personalService = PersonalService();
+  final maestroDetalleService = MaestroDetalleService();
 
-  bool showNewPersonalForm = false;
-  bool showEditPersonalForm = false;
-  bool showTrainingForm = false;
-  bool isExpanded = true;
+  var showNewPersonalForm = false.obs;
+  var showEditPersonalForm = false.obs;
+  var showTrainingForm = false.obs;
+  var isExpanded = true.obs;
 
-  List<Map<String, dynamic>> personalResults = [];
-  List<Map<String, dynamic>> guardiaOptions = [];
-  int? selectedGuardiaKey;
+  var personalResults = <Personal>[].obs;
+  var guardiaOptions = <Map<String, dynamic>>[].obs;
+  var selectedGuardiaKey = RxnInt();
+
+  @override
+  void onInit() {
+    cargarGuardiaOptions();
+    super.onInit();
+  }
 
   Future<void> cargarGuardiaOptions() async {
     try {
-      guardiaOptions = await maestroDetalleService.listarMaestroDetalle();
+      var result = await maestroDetalleService.listarMaestroDetalle();
+      guardiaOptions.assignAll(result);
       log('Guardia opciones: $guardiaOptions');
     } catch (e) {
       log('Error cargando la data de guardia maestro: $e');
@@ -44,16 +51,20 @@ class PersonalSearchController {
         apellidosController.text.isEmpty ? null : apellidosController.text;
 
     try {
-      personalResults = await personalService.listarPersonalEntrenamiento(
+      var result = await personalService.listarPersonalEntrenamiento(
         codigoMcp: codigoMcp,
         numeroDocumento: numeroDocumento,
         nombres: nombres,
         apellidos: apellidos,
-        inGuardia: selectedGuardiaKey,
+        inGuardia: selectedGuardiaKey.value,
         inEstado: null,
       );
-      toggleExpansion();
-      log('Response: $personalResults');
+
+      List<Personal> personalList =
+          result.map<Personal>((item) => Personal.fromJson(item)).toList();
+      personalResults.assignAll(personalList);
+
+      isExpanded.value = false;
       log('Resultados obtenidos: ${personalResults.length}');
     } catch (e) {
       log('Error en la búsqueda: $e');
@@ -61,11 +72,7 @@ class PersonalSearchController {
   }
 
   Future<void> downloadExcel() async {
-    var excel = Excel.createExcel();
-  }
-
-  void toggleExpansion() {
-    isExpanded = !isExpanded;
+    // Lógica para descargar el Excel
   }
 
   void clearFields() {
@@ -73,22 +80,33 @@ class PersonalSearchController {
     documentoIdentidadController.clear();
     nombresController.clear();
     apellidosController.clear();
-    selectedGuardiaKey = null;
+    selectedGuardiaKey.value = null;
   }
 
   void showNewPersonal() {
-    showNewPersonalForm = true;
-    showEditPersonalForm = false;
+    showNewPersonalForm.value = true;
+    showEditPersonalForm.value = false;
   }
 
-  void showEditPersonal() {
-    showNewPersonalForm = false;
-    showEditPersonalForm = true;
+  void showEditPersonal(Personal personal) {
+    codigoMCPController.text = personal.codigoMcp;
+    documentoIdentidadController.text = personal.numeroDocumento;
+    nombresController.text =
+        '${personal.primerNombre} ${personal.segundoNombre}';
+    apellidosController.text =
+        '${personal.apellidoPaterno} ${personal.apellidoMaterno}';
+
+    showNewPersonalForm.value = false;
+    showEditPersonalForm.value = true;
   }
 
   void showTraining() {
-    showNewPersonalForm = false;
-    showEditPersonalForm = false;
-    showTrainingForm = true;
+    showNewPersonalForm.value = false;
+    showEditPersonalForm.value = false;
+    showTrainingForm.value = true;
+  }
+
+  void toggleExpansion() {
+    isExpanded.value = !isExpanded.value;
   }
 }

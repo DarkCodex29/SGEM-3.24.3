@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:sgem/config/api/api.personal.dart';
+import 'package:sgem/shared/modules/personal.dart';
 
 class NewPersonalController {
   final TextEditingController dniController = TextEditingController();
@@ -16,98 +17,82 @@ class NewPersonalController {
   final TextEditingController areaController = TextEditingController();
   final TextEditingController codigoLicenciaController =
       TextEditingController();
+  final TextEditingController fechaIngresoMinaController =
+      TextEditingController();
+  final TextEditingController fechaRevalidacionController =
+      TextEditingController();
+  final TextEditingController operacionMinaController = TextEditingController();
+  final TextEditingController zonaPlataformaController =
+      TextEditingController();
   final TextEditingController restriccionesController = TextEditingController();
 
   final PersonalService personalService = PersonalService();
-  Map<String, dynamic> additionalData = {};
+  Personal? personalData;
 
   Future<void> buscarPersonalPorDni(String dni) async {
     try {
-      final personal = await personalService.buscarPersonalPorDni(dni);
+      final personalJson = await personalService.buscarPersonalPorDni(dni);
+      personalData = Personal.fromJson(personalJson);
 
-      nombresController.text =
-          '${personal['PrimerNombre'] ?? ''} ${personal['SegundoNombre'] ?? ''}';
-      puestoTrabajoController.text = personal['Cargo'] ?? '';
-      codigoController.text = personal['CodigoMcp'] ?? '';
-      apellidoPaternoController.text = personal['ApellidoPaterno'] ?? '';
-      apellidoMaternoController.text = personal['ApellidoMaterno'] ?? '';
-      gerenciaController.text = personal['Gerencia'] ?? '';
-      fechaIngresoController.text = _parseJsonDate(personal['FechaIngreso']);
-      areaController.text = personal['Area'] ?? '';
-      codigoLicenciaController.text = personal['LicenciaCategoria'] ?? '';
-      restriccionesController.text = personal['Restricciones'] ?? '';
-
-      additionalData = {
-        "TipoPersona": personal['TipoPersona'] ?? '',
-        "InPersonalOrigen": personal['InPersonalOrigen'] ?? 0,
-        "FechaIngresoMina": personal['FechaIngresoMina'] ?? '',
-        "LicenciaConducir": personal['LicenciaConducir'] ?? '',
-        "OperacionMina": personal['OperacionMina'] ?? '',
-        "ZonaPlataforma": personal['ZonaPlataforma'] ?? '',
-        "UsuarioRegistro": personal['UsuarioRegistro'] ?? '',
-        "Estado": personal['Estado'] ?? {},
-        "Eliminado": personal['Eliminado'] ?? '',
-        "MotivoElimina": personal['MotivoElimina'] ?? '',
-        "UsuarioElimina": personal['UsuarioElimina'] ?? '',
-      };
-
-      String estado = personal['Estado'] != null
-          ? personal['Estado']['Nombre']
-          : 'Desconocido';
-      log('Estado del personal: $estado');
+      _llenarControladores(personalData!);
     } catch (e) {
       log('Error al buscar el personal: $e');
     }
   }
 
+  void _llenarControladores(Personal personal) {
+    dniController.text = personal.numeroDocumento;
+    nombresController.text =
+        '${personal.primerNombre} ${personal.segundoNombre}';
+    puestoTrabajoController.text = personal.cargo;
+    codigoController.text = personal.codigoMcp;
+    apellidoPaternoController.text = personal.apellidoPaterno;
+    apellidoMaternoController.text = personal.apellidoMaterno;
+    gerenciaController.text = personal.gerencia;
+    fechaIngresoController.text = _formatDate(personal.fechaIngreso!);
+    areaController.text = personal.area;
+    codigoLicenciaController.text = personal.licenciaCategoria;
+    restriccionesController.text = personal.restricciones;
+    operacionMinaController.text = personal.operacionMina;
+    zonaPlataformaController.text = personal.zonaPlataforma;
+    fechaIngresoMinaController.text = _formatDate(personal.fechaIngresoMina!);
+    fechaRevalidacionController.text =
+        _formatDate(personal.licenciaVencimiento!);
+  }
+
   Future<void> registrarPersona() async {
     try {
-      final data = {
-        "Key": 0,
-        "TipoPersona": additionalData['TipoPersona'] ?? "",
-        "InPersonalOrigen": additionalData['InPersonalOrigen'] ?? 0,
-        "FechaIngresoMina": additionalData['FechaIngresoMina'] ?? "",
-        "LicenciaConducir": additionalData['LicenciaConducir'] ?? "",
-        "OperacionMina": additionalData['OperacionMina'] ?? "",
-        "ZonaPlataforma": additionalData['ZonaPlataforma'] ?? "",
-        "Restricciones": restriccionesController.text,
-        "UsuarioRegistro": additionalData['UsuarioRegistro'] ?? "",
-        "UsuarioModifica": "",
-        "CodigoMcp": codigoController.text,
-        "NombreCompleto":
-            '${nombresController.text} ${apellidoPaternoController.text} ${apellidoMaternoController.text}',
-        "Cargo": puestoTrabajoController.text,
-        "NumeroDocumento": dniController.text,
-        "Guardia": {"Key": 0, "Nombre": ""},
-        "Estado": additionalData['Estado'] ?? {"Key": 0, "Nombre": ""},
-        "Eliminado": additionalData['Eliminado'] ?? '',
-        "MotivoElimina": additionalData['MotivoElimina'] ?? '',
-        "UsuarioElimina": additionalData['UsuarioElimina'] ?? '',
-        "ApellidoPaterno": apellidoPaternoController.text,
-        "ApellidoMaterno": apellidoMaternoController.text,
-        "PrimerNombre": nombresController.text.split(' ')[0],
-        "SegundoNombre": nombresController.text.split(' ').length > 1
-            ? nombresController.text.split(' ')[1]
-            : '',
-        "FechaIngreso": DateTime.now().toIso8601String(),
-        "LicenciaCategoria": codigoLicenciaController.text,
-        "LicenciaVencimiento":
-            DateTime.now().add(const Duration(days: 365)).toIso8601String(),
-        "Gerencia": gerenciaController.text,
-        "Area": areaController.text
-      };
+      if (personalData != null) {
+        personalData!
+          ..primerNombre = nombresController.text.split(' ').first
+          ..segundoNombre = nombresController.text.split(' ').length > 1
+              ? nombresController.text.split(' ')[1]
+              : ''
+          ..cargo = puestoTrabajoController.text
+          ..codigoMcp = codigoController.text
+          ..apellidoPaterno = apellidoPaternoController.text
+          ..apellidoMaterno = apellidoMaternoController.text
+          ..gerencia = gerenciaController.text
+          ..fechaIngreso = DateTime.now()
+          ..area = areaController.text
+          ..licenciaCategoria = codigoLicenciaController.text
+          ..restricciones = restriccionesController.text
+          ..operacionMina = operacionMinaController.text
+          ..zonaPlataforma = zonaPlataformaController.text
+          ..fechaIngresoMina = DateTime.parse(fechaIngresoMinaController.text)
+          ..licenciaVencimiento =
+              DateTime.parse(fechaRevalidacionController.text);
 
-      final result = await personalService.registrarPersona(data);
-      log('Persona registrada exitosamente: ${result['Key']}');
+        final result =
+            await personalService.registrarPersona(personalData!.toJson());
+        log('Persona registrada exitosamente: ${result['Key']}');
+      }
     } catch (e) {
       log('Error al registrar persona: $e');
     }
   }
 
-  String _parseJsonDate(String jsonDate) {
-    if (jsonDate.isEmpty) return '';
-    final timestamp = int.parse(jsonDate.replaceAll(RegExp(r'\D'), ''));
-    final date = DateTime.fromMillisecondsSinceEpoch(timestamp);
+  String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
   }
 
@@ -122,6 +107,10 @@ class NewPersonalController {
     fechaIngresoController.clear();
     areaController.clear();
     codigoLicenciaController.clear();
+    fechaIngresoMinaController.clear();
+    fechaRevalidacionController.clear();
+    operacionMinaController.clear();
+    zonaPlataformaController.clear();
     restriccionesController.clear();
   }
 }
