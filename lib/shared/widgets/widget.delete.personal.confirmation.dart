@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class MensajeEliminadoWidget extends StatelessWidget {
-  const MensajeEliminadoWidget({super.key});
+class SuccessDeleteWidget extends StatelessWidget {
+  const SuccessDeleteWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +16,9 @@ class MensajeEliminadoWidget extends StatelessWidget {
             color: Theme.of(context).scaffoldBackgroundColor,
             boxShadow: const [
               BoxShadow(
-                blurRadius: 3,
-                color: Color(0x33000000),
-                offset: Offset(0, 1),
-              )
+                  blurRadius: 3,
+                  color: Color(0x33000000),
+                  offset: Offset(0, 1)),
             ],
             borderRadius: BorderRadius.circular(12),
           ),
@@ -64,7 +63,7 @@ class MensajeEliminadoWidget extends StatelessWidget {
                 const Align(
                   alignment: AlignmentDirectional(0, 0),
                   child: Text(
-                    'Eliminado\nsatisfactoriamente',
+                    'Eliminado satisfactoriamente',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Calibri',

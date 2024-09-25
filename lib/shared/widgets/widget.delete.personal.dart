@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:sgem/shared/widgets/widget.delete.personal.confirmation.dart';
 
-class EliminarPersonalWidget extends StatefulWidget {
-  const EliminarPersonalWidget({super.key});
+class ConfirmDeleteWidget extends StatelessWidget {
+  final String itemName;
+  final String entityType;
+  final VoidCallback onConfirm;
+  final VoidCallback onCancel;
 
-  @override
-  State<EliminarPersonalWidget> createState() => _EliminarPersonalWidgetState();
-}
+  const ConfirmDeleteWidget({
+    super.key,
+    required this.itemName,
+    required this.entityType,
+    required this.onConfirm,
+    required this.onCancel,
+  });
 
-class _EliminarPersonalWidgetState extends State<EliminarPersonalWidget> {
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -55,8 +60,8 @@ class _EliminarPersonalWidgetState extends State<EliminarPersonalWidget> {
                         ),
                         InkWell(
                           splashColor: Colors.transparent,
-                          onTap: () async {
-                            Navigator.pop(context);
+                          onTap: () {
+                            onCancel();
                           },
                           child: Icon(
                             Icons.close,
@@ -67,15 +72,19 @@ class _EliminarPersonalWidgetState extends State<EliminarPersonalWidget> {
                       ],
                     ),
                   ),
-                  const Align(
-                    alignment: AlignmentDirectional(0, 0),
-                    child: Text(
-                      '¿Eliminar personal entrenado\n MP-985?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Calibri',
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                  Align(
+                    alignment: AlignmentDirectional.center,
+                    child: Flexible(
+                      child: Text(
+                        '¿Eliminar $entityType $itemName?',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: 'Calibri',
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
                       ),
                     ),
                   ),
@@ -88,9 +97,7 @@ class _EliminarPersonalWidgetState extends State<EliminarPersonalWidget> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         ElevatedButton(
-                          onPressed: () async {
-                            Navigator.pop(context); // Cierra el modal actual
-                          },
+                          onPressed: onCancel,
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
                                 Theme.of(context).scaffoldBackgroundColor,
@@ -110,28 +117,8 @@ class _EliminarPersonalWidgetState extends State<EliminarPersonalWidget> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        //TODO: Implementar la eliminación de personal
                         ElevatedButton(
-                          onPressed: () async {
-                            if (Navigator.canPop(context)) {
-                              Navigator.pop(context);
-                            }
-                            await Future.delayed(
-                                const Duration(milliseconds: 300));
-
-                            if (mounted) {
-                              showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (BuildContext context) {
-                                  return const Material(
-                                    type: MaterialType.transparency,
-                                    child: MensajeEliminadoWidget(),
-                                  );
-                                },
-                              );
-                            }
-                          },
+                          onPressed: onConfirm,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
                             padding: const EdgeInsets.symmetric(

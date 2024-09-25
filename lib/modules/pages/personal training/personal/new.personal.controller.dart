@@ -65,35 +65,76 @@ class NewPersonalController {
         : '';
   }
 
-  Future<void> registrarPersona() async {
+  Future<void> gestionarPersona(
+      {required String accion, String? motivoEliminacion}) async {
     try {
-      if (personalData != null) {
-        personalData!
-          ..primerNombre = nombresController.text.split(' ').first
-          ..segundoNombre = nombresController.text.split(' ').length > 1
-              ? nombresController.text.split(' ')[1]
-              : ''
-          ..cargo = puestoTrabajoController.text
-          ..codigoMcp = codigoController.text
-          ..apellidoPaterno = apellidoPaternoController.text
-          ..apellidoMaterno = apellidoMaternoController.text
-          ..gerencia = gerenciaController.text
-          ..fechaIngreso = DateTime.now()
-          ..area = areaController.text
-          ..licenciaCategoria = codigoLicenciaController.text
-          ..restricciones = restriccionesController.text
-          ..operacionMina = operacionMinaController.text
-          ..zonaPlataforma = zonaPlataformaController.text
-          ..fechaIngresoMina = DateTime.parse(fechaIngresoMinaController.text)
-          ..licenciaVencimiento =
-              DateTime.parse(fechaRevalidacionController.text);
+      personalData!
+        ..primerNombre = nombresController.text.split(' ').first
+        ..segundoNombre = nombresController.text.split(' ').length > 1
+            ? nombresController.text.split(' ')[1]
+            : ''
+        ..apellidoPaterno = apellidoPaternoController.text.isNotEmpty
+            ? apellidoPaternoController.text
+            : ''
+        ..apellidoMaterno = apellidoMaternoController.text.isNotEmpty
+            ? apellidoMaternoController.text
+            : ''
+        ..cargo = puestoTrabajoController.text.isNotEmpty
+            ? puestoTrabajoController.text
+            : ''
+        ..codigoMcp =
+            codigoController.text.isNotEmpty ? codigoController.text : ''
+        ..gerencia =
+            gerenciaController.text.isNotEmpty ? gerenciaController.text : ''
+        ..area = areaController.text.isNotEmpty ? areaController.text : ''
+        ..fechaIngreso = fechaIngresoController.text.isNotEmpty
+            ? DateTime.parse(fechaIngresoController.text)
+            : null
+        ..fechaIngresoMina = fechaIngresoMinaController.text.isNotEmpty
+            ? DateTime.parse(fechaIngresoMinaController.text)
+            : null
+        ..licenciaConducir = codigoLicenciaController.text.isNotEmpty
+            ? codigoLicenciaController.text
+            : ''
+        ..licenciaVencimiento = fechaRevalidacionController.text.isNotEmpty
+            ? DateTime.parse(fechaRevalidacionController.text)
+            : null
+        ..operacionMina = operacionMinaController.text.isNotEmpty
+            ? operacionMinaController.text
+            : ''
+        ..zonaPlataforma = zonaPlataformaController.text.isNotEmpty
+            ? zonaPlataformaController.text
+            : ''
+        ..restricciones = restriccionesController.text.isNotEmpty
+            ? restriccionesController.text
+            : '';
 
-        final result =
-            await personalService.registrarPersona(personalData!.toJson());
-        log('Persona registrada exitosamente: ${result['Key']}');
+      if (accion == 'eliminar') {
+        personalData!
+          ..eliminado = 'S'
+          ..motivoElimina = motivoEliminacion ?? 'Sin motivo'
+          ..usuarioElimina = 'usuarioActual';
+      }
+
+      bool result;
+      if (accion == 'registrar') {
+        result = await personalService.registrarPersona(personalData!.toJson());
+      } else if (accion == 'actualizar') {
+        result =
+            await personalService.actualizarPersona(personalData!.toJson());
+      } else if (accion == 'eliminar') {
+        result = await personalService.eliminarPersona(personalData!.toJson());
+      } else {
+        throw Exception('Acción no reconocida: $accion');
+      }
+
+      if (result == true) {
+        log('Acción $accion realizada exitosamente');
+      } else {
+        log('Acción $accion fallida');
       }
     } catch (e) {
-      log('Error al registrar persona: $e');
+      log('Error al $accion persona: $e');
     }
   }
 

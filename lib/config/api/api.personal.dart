@@ -44,8 +44,7 @@ class PersonalService {
     }
   }
 
-  Future<Map<String, dynamic>> registrarPersona(
-      Map<String, dynamic> data) async {
+  Future<bool> registrarPersona(Map<String, dynamic> data) async {
     final url = '$baseUrl/Personal/RegistrarPersona';
 
     try {
@@ -57,9 +56,9 @@ class PersonalService {
         ),
       );
 
-      if (response.data != null && response.data['Key'] != null) {
+      if (response.data == true) {
         log('Persona registrada correctamente');
-        return response.data;
+        return true;
       } else {
         throw Exception('Error al registrar persona, respuesta inesperada');
       }
@@ -69,8 +68,7 @@ class PersonalService {
     }
   }
 
-  Future<Map<String, dynamic>> actualizarPersona(
-      Map<String, dynamic> data) async {
+  Future<bool> actualizarPersona(Map<String, dynamic> data) async {
     final url = '$baseUrl/Personal/ActualizarPersona';
 
     try {
@@ -82,9 +80,9 @@ class PersonalService {
         ),
       );
 
-      if (response.data != null && response.data['Key'] != null) {
+      if (response.data == true) {
         log('Persona actualizada correctamente');
-        return response.data;
+        return true;
       } else {
         throw Exception('Error al actualizar persona, respuesta inesperada');
       }
@@ -94,19 +92,21 @@ class PersonalService {
     }
   }
 
-  Future<void> eliminarPersona(String id) async {
-    final url = '$baseUrl/Personal/EliminarPersona?id=$id';
+  Future<bool> eliminarPersona(Map<String, dynamic> data) async {
+    final url = '$baseUrl/Personal/EliminarPersona';
 
     try {
       final response = await dio.delete(
         url,
+        data: jsonEncode(data),
         options: Options(
           followRedirects: false,
         ),
       );
 
-      if (response.data != null && response.data['Key'] == null) {
+      if (response.data == true) {
         log('Persona eliminada correctamente');
+        return true;
       } else {
         throw Exception('Error al eliminar persona, respuesta inesperada');
       }

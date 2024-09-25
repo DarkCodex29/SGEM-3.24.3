@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sgem/config/theme/app_theme.dart';
+import 'package:sgem/modules/pages/personal%20training/personal/new.personal.controller.dart';
 import 'package:sgem/modules/pages/personal%20training/personal/new.personal.page.dart';
 import 'package:sgem/modules/pages/personal%20training/personal.training.controller.dart';
 import 'package:sgem/modules/pages/personal%20training/training/training.personal.page.dart';
@@ -9,6 +10,8 @@ import 'package:sgem/shared/modules/personal.dart';
 import 'package:sgem/shared/widgets/custom.dropdown.dart';
 import 'package:sgem/shared/widgets/custom.textfield.dart';
 import 'package:sgem/shared/widgets/widget.delete.motivo.dart';
+import 'package:sgem/shared/widgets/widget.delete.personal.confirmation.dart';
+import 'package:sgem/shared/widgets/widget.delete.personal.dart';
 
 class PersonalSearchPage extends StatelessWidget {
   const PersonalSearchPage({super.key});
@@ -500,8 +503,7 @@ class PersonalSearchPage extends StatelessWidget {
               ],
             )),
             DataCell(Row(
-              //TODO: CAMBIA
-              children: estado == 'Inactivos'
+              children: estado == 'Inactivo'
                   ? [
                       _buildIconButton(
                           Icons.remove_red_eye, AppTheme.primaryColor, () {
@@ -519,6 +521,9 @@ class PersonalSearchPage extends StatelessWidget {
                       }),
                       _buildIconButton(Icons.delete, AppTheme.errorColor,
                           () async {
+                        String motivoEliminacion = '';
+
+                        // Mostrar modal para ingresar el motivo de eliminación
                         await showModalBottomSheet(
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
@@ -529,21 +534,94 @@ class PersonalSearchPage extends StatelessWidget {
                               onTap: () => FocusScope.of(context).unfocus(),
                               child: Padding(
                                 padding: MediaQuery.of(context).viewInsets,
-                                child: const EliminarMotivoWidget(),
+                                child: DeleteReasonWidget(
+                                  entityType: 'personal',
+                                  onCancel: () {
+                                    Navigator.pop(context);
+                                  },
+                                  onConfirm: (motivo) {
+                                    motivoEliminacion = motivo;
+                                    Navigator.pop(context);
+                                  },
+                                ),
                               ),
                             );
                           },
                         );
+
+                        if (motivoEliminacion.isEmpty) {
+                          return;
+                        }
+
+                        bool confirmarEliminar = false;
+
+                        if (controller.selectedPersonal.value != null) {
+                          String? nombreCompleto =
+                              controller.selectedPersonal.value!.nombreCompleto;
+
+                          await showModalBottomSheet(
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            enableDrag: false,
+                            context: Get.context!,
+                            builder: (context) {
+                              return GestureDetector(
+                                onTap: () => FocusScope.of(context).unfocus(),
+                                child: Padding(
+                                  padding: MediaQuery.of(context).viewInsets,
+                                  child: ConfirmDeleteWidget(
+                                    itemName: nombreCompleto,
+                                    entityType: 'personal',
+                                    onCancel: () {
+                                      Navigator.pop(context);
+                                    },
+                                    onConfirm: () {
+                                      confirmarEliminar = true;
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        } else {
+                          log('Error: No hay personal seleccionado');
+                          return;
+                        }
+
+                        if (!confirmarEliminar) {
+                          return;
+                        }
+
+                        NewPersonalController controllerNew =
+                            Get.put(NewPersonalController());
+
+                        try {
+                          await controllerNew.gestionarPersona(
+                            accion: 'eliminar',
+                            motivoEliminacion: motivoEliminacion,
+                          );
+
+                          await showModalBottomSheet(
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            enableDrag: false,
+                            context: Get.context!,
+                            builder: (context) {
+                              return const SuccessDeleteWidget();
+                            },
+                          );
+                        } catch (e) {
+                          log('Error eliminando la persona: $e');
+                        }
                       }),
                       _buildIconButton(
                           Icons.model_training_sharp, AppTheme.warningColor,
                           () {
                         controller.showTraining();
                       }),
-                      _buildIconButton(
-                          Icons.credit_card_rounded, AppTheme.greenColor, () {
-                        // Acción de carnet
-                      }),
+                      _buildIconButton(Icons.credit_card_rounded,
+                          AppTheme.greenColor, () {}),
                     ],
             )),
           ]);

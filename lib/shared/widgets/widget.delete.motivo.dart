@@ -1,204 +1,96 @@
 import 'package:flutter/material.dart';
-import 'package:sgem/config/theme/app_theme.dart';
-import 'package:sgem/shared/widgets/widget.delete.personal.dart';
 
-class EliminarMotivoWidget extends StatefulWidget {
-  const EliminarMotivoWidget({super.key});
+class DeleteReasonWidget extends StatelessWidget {
+  final TextEditingController motivoController = TextEditingController();
+  final String entityType;
+  final VoidCallback onCancel;
+  final Function(String) onConfirm;
 
-  @override
-  State<EliminarMotivoWidget> createState() => _EliminarMotivoWidgetState();
-}
+  DeleteReasonWidget({
+    super.key,
+    required this.entityType,
+    required this.onCancel,
+    required this.onConfirm,
+  });
 
-class _EliminarMotivoWidgetState extends State<EliminarMotivoWidget> {
   @override
   Widget build(BuildContext context) {
     return Align(
       alignment: const AlignmentDirectional(0, 0),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Container(
-          width: 714,
-          height: 365,
+          width: 350,
+          height: 300,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(12),
             boxShadow: const [
               BoxShadow(
-                blurRadius: 3,
-                color: Color(0x33000000),
-                offset: Offset(0, 1),
-              )
+                  blurRadius: 3, color: Color(0x33000000), offset: Offset(0, 1))
             ],
-            borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
-            mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: double.infinity,
-                height: 80,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF051367),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(0),
-                    bottomRight: Radius.circular(0),
-                    topLeft: Radius.circular(8),
-                    topRight: Radius.circular(8),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Align(
-                        alignment: AlignmentDirectional(-1, 0),
-                        child: Text(
-                          'Eliminar',
-                          style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white),
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Icon(
-                          Icons.close,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          size: 24,
-                        ),
-                      ),
-                    ],
-                  ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Eliminar $entityType',
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.w600),
+                    ),
+                    InkWell(
+                      onTap: onCancel,
+                      child: const Icon(Icons.close, size: 24),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(
-                width: double.infinity,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(35, 20, 0, 20),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Text(
-                        'Ingrese el motivo de la eliminación:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ],
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text('Ingrese el motivo de la eliminación:'),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: TextField(
+                  controller: motivoController,
+                  maxLines: 5,
+                  decoration: const InputDecoration(
+                    hintText: 'Motivo de eliminación',
+                    border: OutlineInputBorder(),
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                child: Container(
-                  width: double.infinity,
-                  height: 120,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.white,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const TextField(
-                              maxLines: 6,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.all(10),
-                                hintText: 'Motivo de eliminación',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: onCancel,
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          side: BorderSide(color: Colors.grey.shade400)),
+                      child: const Text('Cancelar'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        onConfirm(motivoController.text.isEmpty
+                            ? 'Sin motivo'
+                            : motivoController.text);
+                      },
+                      style:
+                          ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      child: const Text('Eliminar'),
+                    ),
+                  ],
                 ),
-              ),
-              Container(
-                width: double.infinity,
-                height: 75,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 24, vertical: 16),
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              side: const BorderSide(
-                                  color: AppTheme.alternateColor),
-                            ),
-                          ),
-                          child: const Text(
-                            'Cerrar',
-                            style: TextStyle(color: AppTheme.secondaryText),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return const Material(
-                                  type: MaterialType.transparency,
-                                  child: EliminarPersonalWidget(),
-                                );
-                              },
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 24, vertical: 16),
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              side: const BorderSide(color: Colors.red),
-                            ),
-                          ),
-                          child: const Text(
-                            'Eliminar',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              )
             ],
           ),
         ),

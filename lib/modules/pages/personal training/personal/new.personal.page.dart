@@ -21,10 +21,9 @@ class NuevoPersonalPage extends StatelessWidget {
   }) {
     if (isEditing || isViewing) {
       controller.dniController.text = personal.numeroDocumento;
-      //TODO: Cambiar por el nombre completo
-      //controller.nombresController.text =
-      //'${personal.primerNombre} ${personal.segundoNombre}';
-      controller.nombresController.text = personal.nombreCompleto;
+      controller.nombresController.text =
+          '${personal.primerNombre} ${personal.segundoNombre}';
+      //controller.nombresController.text = personal.nombreCompleto;
       controller.puestoTrabajoController.text = personal.cargo;
       controller.codigoController.text = personal.codigoMcp;
       controller.apellidoPaternoController.text = personal.apellidoPaterno;
@@ -362,8 +361,13 @@ class NuevoPersonalPage extends StatelessWidget {
           child: const Text("Cancelar", style: TextStyle(color: Colors.grey)),
         ),
         ElevatedButton(
-          onPressed: () {
-            // Acción de guardar
+          onPressed: () async {
+            if (isEditing) {
+              await controller.gestionarPersona(accion: 'actualizar');
+            } else {
+              await controller.gestionarPersona(accion: 'registrar');
+            }
+            onCancel();
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.primaryColor,
